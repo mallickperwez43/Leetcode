@@ -1,0 +1,22 @@
+ class Solution {
+
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+       
+       // two pointer brute force
+
+        int i = 0 , j = i + 1;
+
+        while(i < nums.size() - 1 and j < nums.size())
+        {
+            if(nums[i] + nums[j] == target)
+            {
+                return{i , j}; // Indices found
+            }
+            i++;
+            j++;
+        }
+        return{}; // No solution found
+    }
+    
+};
