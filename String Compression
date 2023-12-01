@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int compress(vector<char>& chars) {
+        int i = 0;
+        int ansIndex = 0;
+        int n = chars.size();
+
+        while(i < n){
+            int j = i + 1;
+ 
+            //same character ka count   
+            while(j < n && chars[i] == chars[j]){
+                j++;
+            }
+            // yaha kab aaoge 
+            // ya toh pura traverse kar liya ho 
+            // ya fhir aapko new/different character mila 
+  
+            // old character store karlo
+            chars[ansIndex++] = chars[i];
+            
+            //count
+            int count = j - i;
+
+            if(count > 1){
+                //converting counting into single digit and saving in answer
+                string cnt = to_string(count);
+                for(char ch : cnt){
+                    chars[ansIndex++] = ch;
+                }
+            }
+
+            //moving to new/different charcter 
+            i = j;
+        }
+
+        //return size
+        return ansIndex;
+    }
+}
