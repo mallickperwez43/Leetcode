@@ -1,0 +1,13 @@
+class Solution {
+public:
+    int countAsterisks(string s) {
+        int ans = 0;
+        bool between = 0;
+        for(char ch : s){
+            if(ch == '*' and !between) ++ans;
+            else if(ch == '|') between = !between;
+        }
+
+        return ans;
+    }
+};
