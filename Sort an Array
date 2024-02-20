@@ -1,0 +1,44 @@
+class Solution {
+public:
+    void merge(vector<int>& nums, int left, int mid, int right){    
+        int low = left, high = mid + 1;
+        vector<int> sorted;
+
+        while(low <= mid and high <= right){
+            if(nums[low] < nums[high]){
+                sorted.push_back(nums[low]);
+                low++;
+            }
+            else{
+                sorted.push_back(nums[high]);
+                high++;
+            }
+        }
+        while(low <= mid){
+            sorted.push_back(nums[low]);
+            low++;
+        }
+        while(high <= right){
+            sorted.push_back(nums[high]);
+            high++;
+        }
+
+        for(int index = left; index <= right; index++){
+            nums[index] = sorted[index - left];
+        }
+    }
+
+    void mergeSort(vector<int>& nums, int s, int e) {
+        if(s < e){
+            int mid = s + (e - s) / 2;
+            mergeSort(nums, s, mid);
+            mergeSort(nums, mid + 1, e);
+            merge(nums, s, mid, e);
+        }
+    }
+      
+    vector<int> sortArray(vector<int>& nums) {
+        mergeSort(nums, 0, nums.size() - 1);
+        return nums;
+    }
+};
