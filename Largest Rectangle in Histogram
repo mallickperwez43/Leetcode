@@ -1,0 +1,86 @@
+class Solution {
+private:
+    // Function to find the next smaller element for each element in the array
+    vector<int> nextSmallerElement(vector<int> arr, int n){
+        // Initialize a stack to store indices
+        stack<int> st;
+        // Push -1 to handle edge case
+        st.push(-1);
+        // Initialize a vector to store the next smaller elements
+        vector<int> ans(n);
+
+        // Iterate the array from the end
+        for(int i = n - 1; i >= 0; i--){
+            int cur = arr[i];
+
+            // Pop elements from the stack until a smaller element is found
+            while(st.top() != -1 and arr[st.top()] >= cur){
+                st.pop();
+            }
+
+            // Store the index of the next smaller element in the answer array
+            ans[i] = st.top();
+            // Push the current index onto the stack
+            st.push(i);
+        }
+        return ans;
+    }
+
+    // Function to find the previous smaller element for each element in the array
+    vector<int> prevSmallerElement(vector<int> arr , int n){
+        // Initialize a stack to store indices
+        stack<int> st;
+        // Push -1 to handle edge case
+        st.push(-1);
+        // Initialize a vector to store the previous smaller elements
+        vector<int> ans(n);
+
+        // Iterate the array from the start
+        for(int i = 0; i < n; i++){
+            int cur = arr[i];
+
+            // Pop elements from the stack until a smaller element is found
+            while(st.top() != -1 and arr[st.top()] >= cur){
+                st.pop();
+            }
+
+            // Store the index of the previous smaller element in the answer array
+            ans[i] = st.top();
+            // Push the current index onto the stack
+            st.push(i);
+        }
+        return ans;
+    }
+public:
+    // Function to find the largest rectangle area
+    int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+        
+        // Find the next smaller element for each element
+        vector<int> next(n);
+        next = nextSmallerElement(heights, n);
+
+        // Find the previous smaller element for each element
+        vector<int> prev(n);
+        prev = prevSmallerElement(heights, n);
+
+        int area = INT_MIN;
+        // Calculate the area for each element
+        for(int i = 0; i < n; i++){
+            int length = heights[i];
+
+            // If next smaller element doesn't exist, set it to the end of array
+            if(next[i] == -1){
+                next[i] = n;
+            }
+            // Calculate the breadth of the rectangle
+            int breadth = next[i] - prev[i] - 1;
+
+            // Calculate the area of the rectangle
+            int newArea = length * breadth;
+            // Update the maximum area
+            area = max(area, newArea);
+        }
+        return area;
+    }
+};
