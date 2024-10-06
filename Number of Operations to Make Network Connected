@@ -1,0 +1,70 @@
+class DisjointSet {
+public:
+    vector<int> parent, size;
+    DisjointSet(int n){
+        parent.resize(n + 1);
+        size.resize(n + 1);
+        for(int i = 0; i <= n; i++){
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+
+    int findUlPar(int node) {
+        if(node == parent[node]){
+            return node;
+        }
+
+        return parent[node] = findUlPar(parent[node]);
+    }
+
+    void unionBySize(int u, int v) {
+        int ulP_u = findUlPar(u);
+        int ulP_v = findUlPar(v);
+
+        if(ulP_u == ulP_v) return;
+
+        if(size[ulP_u] < size[ulP_v]){
+            parent[ulP_u] = ulP_v;
+            size[ulP_v] += size[ulP_u];
+        }
+        else{
+            parent[ulP_v] = ulP_u;
+            size[ulP_u] += size[ulP_v];
+
+        }
+    }
+};
+class Solution {
+public:
+    int makeConnected(int n, vector<vector<int>>& connections) {
+        DisjointSet ds(n);
+
+        // count the extra edges (the ones of same component still connected)
+        int extraConnections = 0;
+        for(vector<int>& vec : connections){
+            int u = vec[0];
+            int v = vec[1];
+            if(ds.findUlPar(u) == ds.findUlPar(v)){
+                extraConnections++;
+            }
+            else{
+                ds.unionBySize(u, v);
+            }
+        }
+
+        // count the no of components
+        int noOfComp = 0;
+        for(int i = 0; i < n; i++){
+            if(ds.parent[i] == i){
+                noOfComp++;
+            }
+        }
+
+        // min edges noOfComp - 1
+        int minConnection = noOfComp - 1;
+        
+        // we need to replace so we ca replace only extra connections
+        return (extraConnections >= minConnection) ? minConnection : -1;
+    }
+};
