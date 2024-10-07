@@ -1,0 +1,67 @@
+// BFS 
+
+class Solution {
+public:
+    bool canVisitAllRooms(vector<vector<int>>& rooms) {
+        int n = rooms.size();
+        vector<bool> vis(n, false);
+
+        queue<int> q; // room keys
+        for(int i = 0; i < rooms[0].size(); i++){ // push all the room keys available from src
+            q.push(rooms[0][i]);
+        }
+        vis[0] = true;
+
+        while(!q.empty()){
+            int front = q.front();
+            q.pop();
+            if(!vis[front]){
+                vis[front] = true;
+                for(int& everyRoom : rooms[front]){
+                    q.push(everyRoom);
+                }
+            }
+        }
+
+        for(int i = 0; i < n; i++){
+            if(!vis[i]){
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+// DFS
+
+class Solution {
+public:
+    vector<bool> vis;
+    int n;
+
+    void dfs(int curRoom, vector<vector<int>>& rooms){
+        vis[curRoom] = true;
+
+        for(int &room : rooms[curRoom]){
+            if(!vis[room]){
+                dfs(room, rooms);
+            }
+        }
+    } 
+
+    bool canVisitAllRooms(vector<vector<int>>& rooms) {
+        n = rooms.size();
+        vis.resize(n, false);
+
+        dfs(0, rooms);
+
+        for(int i = 0; i < n; i++){
+            if(!vis[i]){
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
