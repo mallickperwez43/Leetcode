@@ -1,0 +1,28 @@
+class Solution {
+public:
+    void dfs(int src, int target, vector<int>& curPath, vector<vector<int>>& result, vector<vector<int>>& graph){
+        curPath.push_back(src); // add
+        if(src == target){
+            result.push_back(curPath);
+        }
+        else{ // explore
+            for(int& node : graph[src]){
+                dfs(node, target, curPath, result, graph);
+            }
+        }
+        curPath.pop_back(); // backtrack
+    } 
+    vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) {
+        int n = graph.size();
+
+        int source = 0; 
+        int target = n - 1;
+
+        vector<vector<int>> result;  
+        vector<int> temp; 
+
+        dfs(source, target, temp, result, graph);
+
+        return result;
+    }
+};
