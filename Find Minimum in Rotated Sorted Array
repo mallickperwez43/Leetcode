@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int start = 0;
+        int end = nums.size() - 1;
+
+        while(start < end) {
+            int mid = start + (end - start) / 2;
+
+            if(nums[mid] > nums[end]){ // mid at some higer value and end on a lower so shift start -> pivot is on the right side
+                start = mid + 1;
+            }
+            else{ // nums[mid] <= nums[end] 
+                end = mid;
+            }
+        }
+
+        return nums[start];
+    }
+};
