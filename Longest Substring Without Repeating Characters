@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        unordered_set<char> st; 
+        int n = s.length();
+        int len = 0;
+
+        int left = 0;
+        int right = 0;
+
+        while(right < n){
+            if(st.count(s[right]) == 0) { // not present
+                st.insert(s[right]);
+                len = max(len, (int)st.size());
+                right++; 
+            }
+            else { // found a duplicate so only move left ptr
+                st.erase(s[left]);
+                left++;
+            }
+        }
+
+        return len;
+    }
+};
