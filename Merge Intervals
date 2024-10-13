@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        // sort intervals based on starting point
+        sort(intervals.begin(), intervals.end());
+
+        vector<vector<int>> mergedIntervals;
+
+        vector<int> prevInt = intervals[0];
+
+        for(int i = 1; i < intervals.size(); i++){
+            vector<int> curInt = intervals[i];
+
+            if(curInt[0] <= prevInt[1]){ // in range -> maximize the ending point
+                prevInt[1] = max(prevInt[1], curInt[1]);
+            }
+            else{
+                mergedIntervals.push_back(prevInt); // add to merged
+                prevInt = curInt;
+            }
+        }
+
+        mergedIntervals.push_back(prevInt); // last
+
+        return mergedIntervals;
+    }
+};
