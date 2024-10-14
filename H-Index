@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int hIndex(vector<int>& citations) {
+        int n = citations.size();
+        vector<int> count(n + 1, 0);
+        
+        // Count the number of citations for each value
+        for(int& ct : citations){
+            if(ct >= n){ // last read more  
+                count[n]++;
+            }
+            else{
+                count[ct]++;
+            }
+        }
+         
+        // Calculate H Index
+        int total = 0;
+        for(int i = n; i >= 0; i--){
+            total += count[i];
+            if(total >= i){
+                return i; // max H index
+            }
+        }
+
+        return 0;
+    }
+};
