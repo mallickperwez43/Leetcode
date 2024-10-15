@@ -1,0 +1,64 @@
+// suffix type trie
+
+struct trieNode {
+    bool endOfWord;
+    trieNode* children[26];
+
+    trieNode() {
+        endOfWord = false;
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+    }
+};
+
+class Solution {
+public:
+    int ans = 0;
+    void insertInTrie(trieNode* root, string& word){
+        trieNode* crawler = root;
+        
+        // Insert the word in reverse order
+        for(int i = word.length() - 1; i >= 0; i--){
+            int idx = word[i] - 'a';
+
+            if(crawler -> children[idx] == NULL){
+                crawler -> children[idx] = new trieNode();
+            }
+            crawler = crawler -> children[idx];
+        }
+        crawler -> endOfWord = true;;
+    }
+
+    void dfsOnTrie(trieNode* root, int depth){
+        
+        bool isLeaf = true;
+        
+        for(int i = 0; i < 26; i++){
+            if(root -> children[i] != NULL){
+                isLeaf = false;
+                dfsOnTrie(root -> children[i], depth + 1);
+            }
+        }
+         
+        // If it's a leaf or an end of word without further children, add to the answer
+        if(isLeaf && root -> endOfWord){
+            ans += depth + 1;
+        }
+    }
+
+    int minimumLengthEncoding(vector<string>& words) {
+        // create root
+        trieNode* root = new trieNode();
+
+        // insert all words of array in reverse fashion
+        for(string& word : words){
+            insertInTrie(root, word);
+        }
+
+        // dfs call and consider deapth of only lead
+        dfsOnTrie(root, 0);
+
+        return ans;
+    }
+};
