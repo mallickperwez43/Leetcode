@@ -1,0 +1,84 @@
+struct trieNode {
+    bool endOfWord;
+    trieNode* children[26];
+
+    trieNode(){
+        endOfWord = false;
+
+        for(int i= 0; i < 26; i++){
+            children[i] = NULL;
+        }
+    }
+};
+
+class MagicDictionary {
+public:
+    trieNode* root;
+    
+    void insert(trieNode* root, string& word){
+        trieNode* crawler = root;
+
+        for(char& ch : word){
+            int idx = ch - 'a';
+            if(crawler -> children[idx] == NULL){
+                crawler -> children[idx] = new trieNode();
+            }
+            crawler = crawler -> children[idx];
+        }
+
+        crawler -> endOfWord = true;
+    }
+
+    bool searchDFS(trieNode* root, string& word, int wordIdx, bool isModified){
+        if(root == NULL) return false;
+        if(wordIdx == word.length()){
+            return isModified && root -> endOfWord;
+        }
+
+        int idx = word[wordIdx] - 'a';
+        if(isModified){
+            return searchDFS(root -> children[idx], word, wordIdx + 1, true);
+        }
+        else{
+            // check for all a-z char and try modifing except for the char thats already present
+            for(int i = 0; i < 26; i++){
+                if(root -> children[i] != NULL){
+                    if(i == idx){ // already present char -> dont modify
+                        if(searchDFS(root -> children[i], word, wordIdx + 1, false)){
+                            return true;
+                        }
+                    }
+                    else{
+                        if(searchDFS(root -> children[i], word, wordIdx + 1, true)){
+                            return true;
+                        }
+                    }
+                }
+            } 
+        }
+
+        return false;
+    }
+
+    MagicDictionary() {
+        root = new trieNode();
+    }
+    
+    void buildDict(vector<string> dictionary) {
+        for(string& word : dictionary){
+            insert(root, word);
+        }
+    }
+    
+    bool search(string searchWord) {
+        bool result = searchDFS(root, searchWord, 0, false);
+        return result;
+    }
+};
+
+/**
+ * Your MagicDictionary object will be instantiated and called as such:
+ * MagicDictionary* obj = new MagicDictionary();
+ * obj->buildDict(dictionary);
+ * bool param_2 = obj->search(searchWord);
+ */
