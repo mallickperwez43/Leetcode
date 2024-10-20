@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<int> dirX = {0, 1, 0, -1};
+    vector<int> dirY = {-1, 0, 1, 0};
+
+    bool isValid(int r, int c, int m, int n, vector<vector<char>>& maze){
+        return (r >= 0 && r < m && c >= 0 && c < n && maze[r][c] != '+');
+    }
+
+    int nearestExit(vector<vector<char>>& maze, vector<int>& entrance) {
+        int m = maze.size();
+        int n = maze[0].size();
+
+        pair<int, int> src = make_pair(entrance[0], entrance[1]);
+        queue<pair<int, int>> q; // {x, y}
+        q.push(src);
+        maze[src.first][src.second] = '+'; // mark visited
+        int steps = 0;
+
+        while(!q.empty()){
+            int size = q.size();
+
+            while(size--){
+                pair<int, int> temp = q.front();
+                q.pop();
+
+                if(temp != src && (temp.first == 0 || temp.first == m - 1 || temp.second == 0 || temp.second == n - 1)){
+                    return steps; // not source and also reached boundary reached
+                }
+
+                for(int i = 0; i < 4; i++){
+                    int r = temp.first + dirX[i];
+                    int c = temp.second + dirY[i];
+
+                    if(isValid(r, c, m, n, maze)){
+                        q.push(make_pair(r, c));
+                        maze[r][c] = '+'; // mark visited
+                    }
+                }
+            }
+            steps++; // traversed a level
+        }
+
+        return -1;
+    }    
+};
