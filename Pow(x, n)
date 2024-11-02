@@ -1,0 +1,26 @@
+class Solution {
+public:
+    double myPow(double x, int n) {
+        if(n < 0){ // change the number as needed if neg
+            x = 1 / x;
+        }
+
+        long raising_power = labs(n);
+
+        double num = 1.0;
+        
+        while(raising_power){
+            if(raising_power & 1){
+                num *= x;
+            }
+            
+            x *= x;
+            raising_power >>= 1; 
+        }
+
+        return num;
+    }
+};
+
+// TC : O(logn)
+// SC : O(1)
