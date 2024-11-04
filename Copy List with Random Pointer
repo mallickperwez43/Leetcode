@@ -1,0 +1,81 @@
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+    
+    Node(int _val) {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+*/
+
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        // step 1 : create a clone list
+        Node* cloneHead = NULL;
+        Node* cloneTail = NULL;
+
+        Node* temp = head;
+        while(temp != NULL){
+            Node* newNode = new Node(temp -> val);
+            
+            if(cloneHead == NULL){
+                cloneHead = newNode;
+                cloneTail = newNode;
+            }
+            else{
+                cloneTail -> next = newNode;
+                cloneTail = newNode;
+            }
+
+            temp = temp -> next; 
+        }
+
+        // step 2 : add cloneNodes in between originalNodes
+        Node* originalNode = head;
+        Node* cloneNode    = cloneHead;
+
+        while(originalNode != NULL && cloneNode != NULL){
+            Node* nextNode = originalNode -> next;
+            originalNode -> next = cloneNode;
+            originalNode = nextNode;
+
+            nextNode = cloneNode -> next;
+            cloneNode -> next = originalNode;
+            cloneNode = nextNode;
+        }
+
+        // step 3 : copy random pointer
+        temp = head;
+
+        while(temp != NULL){
+            if(temp -> next != NULL){
+                temp -> next -> random = temp -> random ? temp -> random -> next : temp -> random;
+            }
+            temp = temp -> next -> next;
+        }
+
+        // step 4 : revert changes done in step 2
+        originalNode = head;
+        cloneNode    = cloneHead;
+
+        while(originalNode != NULL && cloneNode != NULL){
+            originalNode -> next = cloneNode -> next;
+            originalNode = originalNode -> next;
+
+            if(originalNode != NULL){
+                cloneNode -> next = originalNode -> next;
+            }
+            cloneNode = cloneNode -> next;
+        }
+
+        // step 5 : return ans
+        return cloneHead;
+    }
+};
