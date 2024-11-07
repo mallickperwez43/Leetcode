@@ -1,0 +1,54 @@
+class Solution {
+public:
+    typedef pair<int, pair<int, int>> P; 
+    int n;
+    int m;
+    int dirX[4] = {0, 1, 0, -1};
+    int dirY[4] = {1, 0, -1, 0};
+    
+    bool isValid(int i, int j){
+        return (i >= 0 && i < n && j >= 0 && j < m);
+    }
+
+    bool findSafeWalk(vector<vector<int>>& grid, int health) {
+        n = grid.size();
+        m = grid[0].size();
+
+        if(health == 1 && grid[0][0] == 1){
+            return false;
+        }
+
+        queue<P> q; // {health, {i, j}}
+        vector<vector<int>> maxHealth(n, vector<int>(m, -1)); // Track max health at each cell
+        
+        q.push({grid[0][0] == 1 ? health - 1 : health, {0, 0}});
+        maxHealth[0][0] = grid[0][0] == 1 ? health - 1 : health;
+
+        while(!q.empty()){
+            int curHealth = q.front().first;
+            int row       = q.front().second.first;
+            int col       = q.front().second.second;
+            q.pop();
+            
+            if(row == n - 1 && col == m - 1 && curHealth > 0){
+                return true;
+            }
+
+            for(int i = 0; i < 4; i++){
+                int newR = row + dirX[i];
+                int newC = col + dirY[i];
+
+                if(isValid(newR, newC)){
+                    int nextHealth = curHealth - grid[newR][newC];
+
+                    if(nextHealth > 0 && nextHealth > maxHealth[newR][newC]){
+                        maxHealth[newR][newC] = nextHealth;
+                        q.push({nextHealth, {newR, newC}});
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+};
