@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int myAtoi(string s) {
+        long long ans = 0;
+        int n = s.length();
+        int i = 0;
+        bool sign = true; // default as positive
+
+        // skip leading spaces
+        while(s[i] == ' '){
+            i++;
+        }
+
+        // check for sign 
+        if(s[i] == '-' || s[i] == '+'){
+            sign = (s[i] == '-') ? false : true;
+            i++; 
+        }
+
+        // process digits
+        while(i < n && s[i] >= '0' && s[i] <= '9'){
+            ans = ans * 10 + (s[i] - '0');
+
+            // check for overflow
+            if(sign == true && ans > INT_MAX) return INT_MAX;
+            if(sign == false && ans * -1 < INT_MIN) return INT_MIN;
+
+            i++;
+        }
+
+        return (sign) ? ans : ans * -1;
+    }
+};
