@@ -1,0 +1,43 @@
+class Solution {
+public:
+    vector<int> sum; // sum[i] = prefix sum from 0 to ith index
+    int totalSum;
+
+    Solution(vector<int>& w) {
+        int curSum = 0;
+
+        for(int& weight : w){
+            curSum += weight;
+            sum.push_back(curSum);
+        }
+
+        totalSum = curSum;
+    }
+     
+    int pickIndex() {
+        int key = rand() % totalSum + 1; // range [0 - totalSum]
+
+        // upper bound
+        int low = 0;
+        int high = sum.size();
+
+        while(low < high){
+            int mid = low + (high - low) / 2;
+
+            if(key > sum[mid]){
+                low = mid + 1;
+            }
+            else{
+                high = mid;
+            }
+        }
+
+        return low;
+    }
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(w);
+ * int param_1 = obj->pickIndex();
+ */
