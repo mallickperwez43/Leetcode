@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int dirX[8] = {1, -1, -1, 1, 2, -2, -2, 2};
+    int dirY[8] = {2, 2, -2, -2, 1, 1, -1, -1};
+    bool checkValidGrid(vector<vector<int>>& grid) {
+        int maxNum = grid.size() * grid.size() - 1;
+        int n = grid.size();
+        int curNum = 0;
+        int srcX = 0;
+        int srcY = 0;
+        int curX;
+        int curY;
+
+        if(grid[srcX][srcY] != curNum) 
+            return false;
+        
+        while(curNum < maxNum){
+            curNum++;
+
+            bool notFound = true;
+
+            for(int i = 0; i < 8; i++){
+                curX = srcX + dirX[i];
+                curY = srcY + dirY[i];
+
+                if(curX >= 0 && curX < n && curY >= 0 && curY < n && grid[curX][curY] == curNum){
+                    srcX = curX;
+                    srcY = curY;
+                    notFound = false;
+                    break;
+                }
+            }
+
+            if(notFound)
+                return false;
+        }
+
+        return true;
+    }
+};
