@@ -1,0 +1,69 @@
+// Method 1 
+class Solution {
+public:
+    bool doesValidArrayExist(vector<int>& derived) {
+        int n = derived.size();
+
+        // First try with original[0] = 0;
+        vector<int> original(n);
+        original[0] = 0;
+        for(int i = 0; i < n - 1; i++){
+            original[i + 1] = original[i] ^ derived[i];
+        } 
+
+        if((original[n - 1] ^ original[0]) == derived[n - 1]){
+            return true;
+        }
+
+        // Now try with original[0] = 1;
+        original[0] = 1;
+        for(int i = 0; i < n - 1; i++){
+            original[i + 1] = original[i] ^ derived[i];
+        } 
+
+        if((original[n - 1] ^ original[0]) == derived[n - 1]){
+            return true;
+        }
+
+        return false;
+    }
+};
+
+// TC : O(n + n) ~ O(2n) ~ O(n)
+// SC : O(n)
+
+// Method 2
+class Solution {
+public:
+    bool doesValidArrayExist(vector<int>& derived) {
+        int XOR = 0;
+
+        for(int& x : derived){
+            XOR ^= x;
+        }
+
+        return XOR == 0;
+    }
+};
+
+// TC : O(n)
+// SC : O(1)
+
+// Method 3
+class Solution {
+public:
+    bool doesValidArrayExist(vector<int>& derived) {
+        int onesCount = 0;
+
+        for(int& x : derived){
+            if(x == 1){
+                onesCount++;
+            }
+        }
+
+        return (onesCount & 1) == 0;
+    }
+};
+
+// TC : O(n)
+// SC : O(1)
