@@ -1,0 +1,27 @@
+class Solution {
+public:
+    long long gridGame(vector<vector<int>>& grid) {
+        long long firstRowRemainSum = accumulate(grid[0].begin(), grid[0].end(), 0LL); // O(col)
+        
+        long long secondRowRemainSum = 0LL;
+
+        long long minimizedRobot2Sum = LONG_LONG_MAX;
+        
+        for(int Robot1Col = 0; Robot1Col < grid[0].size(); Robot1Col++) {  //  O(col)
+            // Robot 1 took this strategy
+            firstRowRemainSum -= grid[0][Robot1Col];
+
+            // Robot 2 will try to do best after Robot 1 has taken above strategy
+            long long bestOfRobot2 = max(firstRowRemainSum, secondRowRemainSum);
+
+            minimizedRobot2Sum     = min(minimizedRobot2Sum, bestOfRobot2);
+
+            secondRowRemainSum    += grid[1][Robot1Col];
+        }
+
+        return minimizedRobot2Sum;
+    }
+};
+
+// TC : O(col + col) ~ O(col)
+// SC : O(1)
