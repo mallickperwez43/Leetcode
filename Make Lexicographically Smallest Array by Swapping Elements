@@ -1,0 +1,80 @@
+// BRUTE FORCE --> TLE
+class Solution {
+public:
+    vector<int> lexicographicallySmallestArray(vector<int>& nums, int limit) {
+        int n = nums.size();
+
+        for(int i = 0; i < n; i++) { // O(n)
+            while(true) {
+                int smallValue = nums[i];
+                int idx = -1;
+                
+                for(int j = i + 1; j < n; j++) { // O(n)
+                    if(abs(nums[i] - nums[j]) <= limit) {
+                        if(nums[j] < smallValue) {
+                            smallValue = nums[j];
+                            idx = j;
+                        }
+                    }
+                }
+
+                if(idx != -1) {
+                    swap(nums[i], nums[idx]);
+                }
+                else{
+                    break;
+                }
+            } 
+        }
+
+        return nums;
+    }
+};
+
+// TC : ~O(n^3)
+// SC : O(1)
+
+
+// OPTIMAL
+class Solution {
+public:
+    vector<int> lexicographicallySmallestArray(vector<int>& nums, int limit) {
+        int n = nums.size();
+
+        vector<int> vec = nums;
+        // sort the vec
+        sort(vec.begin(), vec.end()); // O(nlogn)
+        
+        // grouping
+        int groupNum = 0;
+        unordered_map<int, int> numToGroup; // el --> group no 
+        numToGroup[vec[0]] = groupNum;
+
+        unordered_map<int, list<int>> groupToList; // groupNum -> {list of all the nums in group}
+        groupToList[groupNum].push_back(vec[0]);
+     
+        for(int i = 1; i < n; i++) { //  O(n)
+            if(abs(vec[i] - vec[i - 1]) > limit) {
+                groupNum += 1;
+            }
+
+            numToGroup[vec[i]] = groupNum; // O(1)
+            groupToList[groupNum].push_back(vec[i]); // O(1)
+        }
+
+        // build the ans - merge the groups
+        vector<int> result(n);
+        for(int i = 0; i < n; i++) { // O(n)
+            int num = nums[i];
+            int group = numToGroup[num];    
+            // smallest available number in this group
+            result[i] = *(groupToList[group].begin()); // use hogaya to delete kardo use el ko // O(1)
+            groupToList[group].pop_front();
+        }
+
+        return result;
+    }
+};
+
+// TC : O(nlogn + 2n) ~ O(n(logn + 2)) ~ O(nlogn)
+// SC : O(n)
