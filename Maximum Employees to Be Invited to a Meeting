@@ -1,0 +1,77 @@
+class Solution {
+public:
+    int BFS(int start, unordered_map<int, vector<int>>& adj, vector<bool>& visited) { // TC : O(n)
+        queue<pair<int, int>> q; // { node, pathLength}
+        q.push(make_pair(start, 0));
+        int maxDistance = 0;
+
+        while(!q.empty()) {
+            auto[curNode, dist] = q.front();
+            q.pop();
+
+            for(auto& ngbr : adj[curNode]) {
+                if(!visited[ngbr]) {
+                    visited[ngbr] = true;
+                    q.push(make_pair(ngbr, dist + 1));
+                    maxDistance = max(maxDistance, dist + 1);
+                }
+            }            
+        }
+
+        return maxDistance;
+    }
+    int maximumInvitations(vector<int>& favorite) {
+        int n = favorite.size();
+        unordered_map<int, vector<int>> adj; // SC : O(n)
+
+        for(int i = 0; i < n; i++) { // TC : O(n)
+            int u = i;
+            int v = favorite[i];
+            // given : u --> v
+            adj[v].push_back(u); // reversed garph - so that we can find the path length after traversal 
+        }
+
+        int longestCycleEmplCount = 0; // maxCycleLength
+        int happyCoupleEmplCount = 0; // cycle lenght == 2 walo ke total kitna mill payega
+        
+        vector<bool> visited(n, false); // SC : O(n)
+        for(int i = 0; i < n; i++) { // TC : ~O(n)
+            
+            if(!visited[i]) {
+                // { node, abtak ka node count}
+                unordered_map<int, int> mp;
+
+                int curNode      = i;
+                int curNodeCount = 0;
+
+                while(!visited[curNode]) { // until cycle is not detected
+                    visited[curNode] = true;
+                    mp[curNode] = curNodeCount;
+
+                    int nextNode = favorite[curNode]; // favorite node of curNode
+                    curNodeCount += 1;
+
+                    if(mp.count(nextNode) != 0) { // already visited hai yeh matlab cycle detect hogaya hai
+                        int cycleLength = curNodeCount - mp[nextNode];
+                        longestCycleEmplCount = max(longestCycleEmplCount, cycleLength);
+
+                        if(cycleLength == 2) { // happy couple case
+                            // curNode <-> nextNode = 2 nodes
+                            vector<bool> visitedNodes(n, false);
+                            visitedNodes[curNode] = true;
+                            visitedNodes[nextNode] = true;
+                            happyCoupleEmplCount += 2 + BFS(curNode, adj, visitedNodes) + BFS(nextNode, adj, visitedNodes);
+                        }
+                        break;
+                    }
+                    curNode = nextNode;
+                }
+            }
+        }
+
+        return max(longestCycleEmplCount, happyCoupleEmplCount);
+    }
+};
+
+// TC : O(n)
+// SC : O(n)
