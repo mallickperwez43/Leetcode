@@ -1,0 +1,36 @@
+class Solution {
+public:
+   typedef pair<int, pair<int, int>> P;
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        priority_queue<P, vector<P>, greater<P>> pq; // min heap {sum, {num1 idx, num2 idx}}
+        int m = nums1.size();
+        int n = nums2.size();
+        vector<vector<int>> result;
+
+        // push all combinations of nums1 element with nums2[0]
+        for(int i = 0; i < m; i++) {  // O(mlogm)
+            pq.push({nums1[i] + nums2[0], {i, 0}}); // O(logm)
+        }
+
+        // build ans 
+        while(!pq.empty() && k--) { // O(klogk)
+            P cur = pq.top();
+            pq.pop();
+
+            int sum = cur.first;
+            int num1Idx = cur.second.first;
+            int num2Idx = cur.second.second;
+
+            result.push_back({nums1[num1Idx], nums2[num2Idx]});
+
+            if(num2Idx < n - 1) {
+                pq.push({nums1[num1Idx] + nums2[num2Idx + 1], {num1Idx, num2Idx + 1}}); // O(logk)
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(mlogm + klogk)
+// SC : O(m + k)
