@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<string> summaryRanges(vector<int>& nums) {
+        vector<string> result;
+        int n = nums.size();
+        if(n == 0)
+            return result;
+        
+
+        int cur = nums[0]; // cur position
+        for(int i = 1; i <= n; i++) {
+            if(i == n || nums[i] != nums[i - 1] + 1) { // range broken so store
+                if(cur == nums[i - 1]) { // single element range
+                    result.push_back(to_string(cur));
+                }
+                else { // push range
+                    result.push_back(to_string(cur) + "->" + to_string(nums[i - 1])); 
+                }
+
+                // update cur
+                if(i < n)
+                    cur = nums[i] ; // move 1 forward
+            }
+        }
+
+        return result;
+    }
+};
+// TC : O(n)
+// SC : O(1) excluding result
