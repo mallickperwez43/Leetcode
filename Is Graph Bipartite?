@@ -1,0 +1,93 @@
+// APPROACH 1 : DFS
+
+class Solution {
+public:
+    bool checkBipartiteDFS(vector<vector<int>>& adj, int curNode, vector<int>& color, int curColor) {
+        color[curNode] = curColor; // colored the curNode with curColor
+
+        for(auto& nbr : adj[curNode]) {
+
+            if(color[nbr] == color[curNode])
+                return false;
+            
+            if(color[nbr] == -1) { // never visited this nbr node before
+                int colorOfNbr = 1 - curColor;
+
+                if(checkBipartiteDFS(adj, nbr, color, colorOfNbr) == false)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool isBipartite(vector<vector<int>>& adj) {
+        int V = adj.size();
+
+        vector<int> color(V, -1); // no node is colored at the start
+        // red = 1
+        // green = 0;
+
+        for(int i = 0; i < V; i++) {
+            if(color[i] == -1) {
+                if(checkBipartiteDFS(adj, i, color, 1) == false)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+// TC : O(V + E)
+// SC : O(V)
+
+
+// APPROACH 2 : BFS
+
+class Solution {
+public:
+    bool checkBipartiteBFS(vector<vector<int>>& adj, int curNode, vector<int>& color, int curColor) {
+        queue<int> q;
+        q.push(curNode);
+        color[curNode] = curColor; // colored the curNode with curColor
+        
+        while(!q.empty()) {
+            
+            int cur = q.front();
+            q.pop();
+
+            for(auto& nbr : adj[cur]) {
+     
+                if(color[nbr] == color[cur])
+                    return false;
+                if(color[nbr] == -1) { // never visited this nbr node before
+                    color[nbr] = 1 - color[cur];
+                    q.push(nbr);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool isBipartite(vector<vector<int>>& adj) {
+        int V = adj.size();
+
+        vector<int> color(V, -1); // no node is colored at the start
+        // red = 1
+        // green = 0;
+
+        for(int i = 0; i < V; i++) {
+            if(color[i] == -1) {
+                if(checkBipartiteBFS(adj, i, color, 1) == false)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+// TC : O(V + E)
+// SC : O(V)
