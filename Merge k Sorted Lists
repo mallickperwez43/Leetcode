@@ -1,0 +1,57 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    typedef pair<int, ListNode*> P;
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        int k = lists.size();
+
+        priority_queue<P, vector<P>, greater<P>> pq; // min heap 
+        ListNode* head = NULL;
+        ListNode* tail = NULL;
+        
+        if(k == 0) return head;
+
+        // push the first k nodes in the heap
+        for(int i = 0; i < k; i++) {
+            if(lists[i] != NULL){
+                pq.push(make_pair(lists[i] -> val, lists[i]));
+            }
+        }
+        
+        // process the whole list 
+        while(!pq.empty()) {
+            P cur = pq.top();
+            pq.pop();
+
+            ListNode* temp = cur.second;
+
+            if(temp -> next != NULL) {
+                pq.push(make_pair(temp -> next -> val, temp -> next));
+            }
+
+            if(head == NULL) {
+                head = temp;
+                tail = temp;
+            }
+            else {
+                tail -> next = temp;
+                tail = tail -> next;
+            }
+        }
+
+        return head;
+    }
+};
+
+// total nodes in the list -> n * k, any time the size of the heap is logk
+// TC : O(n * k * logk)
+// SC : O(k)
