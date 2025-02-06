@@ -1,0 +1,140 @@
+// BRUTE FORCE
+class Solution {
+public:
+    int tupleSameProduct(vector<int>& nums) {
+        int n = nums.size();
+
+        int tuples = 0;
+
+        for(int i = 0; i < n; i++) {
+            for(int j = i + 1; j < n; j++) {
+
+                for(int k = 0; k < n; k++) {
+                    for(int l = k + 1; l < n; l++) {
+
+                        if(i != k && i != l && j != k && j != l) {
+                            int p1 = nums[i] * nums[j];
+                            int p2 = nums[k] * nums[l];
+
+                            if(p1 == p2) {
+                                tuples++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return (tuples / 2) * 8;
+    }
+};
+
+// TC : O(n^4)
+// SC : O(1)
+
+
+// BETTER
+class Solution {
+public:
+    int tupleSameProduct(vector<int>& nums) {
+        int n = nums.size();
+
+        int tuples = 0;
+
+        sort(nums.begin(), nums.end());
+
+        for(int i = 0; i < n; i++) {
+            for(int j = n - 1; j > i; j--) {
+
+                for(int k = i + 1; k < j; k++) {
+                    for(int l = j - 1; l > k; l--) {
+    
+                        int p1 = nums[i] * nums[j];
+                        int p2 = nums[k] * nums[l];
+
+                        if(p1 == p2) {
+                            tuples++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return tuples * 8;
+    }
+};
+
+// TC : O(nlogn + n^4)
+// SC : O(1)
+
+
+// FURTHER BETTER
+class Solution {
+public:
+    int tupleSameProduct(vector<int>& nums) {
+        int n = nums.size();
+
+        int tuples = 0;
+
+        sort(nums.begin(), nums.end());
+
+        for(int i = 0; i < n; i++) {
+            for(int j = n - 1; j > i; j--) {
+                int product = nums[i] * nums[j];
+                unordered_set<int> st;
+
+                for(int k = i + 1; k < j; k++) {
+
+                    if(product % nums[k] == 0) {
+                        int dValue = product / nums[k];
+
+                        if(st.count(dValue)) {
+                            tuples++;
+                        }
+
+                        st.insert(nums[k]);
+                    }    
+                }
+            }
+        }
+
+        return tuples * 8;
+    }
+};
+
+// TC : O(nlogn + n^3)
+// SC : O(n)
+
+
+// OPTIMAL
+class Solution {
+public:
+    int tupleSameProduct(vector<int>& nums) {
+        int n = nums.size();
+
+        int tuples = 0;
+
+        unordered_map<int, int> mp; // product -> frequency
+
+        for(int i = 0; i < n; i++) {
+            for(int j = i + 1; j < n; j++) {
+                int product = nums[i] * nums[j];
+                mp[product]++;
+            }
+        }
+
+        for(auto& it : mp) {
+            int prod = it.first;
+            int freq = it.second;
+
+            if(freq >= 2)
+                tuples += (freq * (freq - 1)) / 2;
+
+        }
+
+        return tuples * 8;
+    }
+};
+
+// TC : O(n^2)
+// SC : O(n)
