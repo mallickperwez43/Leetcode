@@ -1,0 +1,96 @@
+// APPROACH 1 : 2 maps with set
+
+class NumberContainers {
+public:
+    unordered_map<int, int> idxToNum;
+    unordered_map<int, set<int>> numToIdx;
+
+    NumberContainers() {
+        // do nothing
+        idxToNum.clear();
+        numToIdx.clear();    
+    }
+    
+    void change(int index, int number) {
+        if(idxToNum.count(index)) { // O(1 * logn)    
+            int prevNum = idxToNum[index];
+            numToIdx[prevNum].erase(index); // O(logn)
+
+            if(numToIdx[prevNum].empty()) {
+                numToIdx.erase(prevNum);
+            }
+        }
+
+        idxToNum[index] = number;
+        numToIdx[number].insert(index); // O(logn)
+    }
+    
+    int find(int number) { // O(1)
+        if(numToIdx.count(number)) {
+            return *numToIdx[number].begin();
+        }
+
+        return -1;
+    }
+};
+
+// TC : change -> O(logn), find -> O(1)
+// SC : O(n)
+
+/**
+ * Your NumberContainers object will be instantiated and called as such:
+ * NumberContainers* obj = new NumberContainers();
+ * obj->change(index,number);
+ * int param_2 = obj->find(number);
+ */
+
+
+// APPROACH 2 : 2 maps with min heap
+
+class NumberContainers {
+public:
+    unordered_map<int, int> idxToNum;
+    unordered_map<int, priority_queue<int, vector<int>, greater<int>>> numToIdx;
+
+    NumberContainers() {
+        // do nothing
+        idxToNum.clear();
+        numToIdx.clear();    
+    }
+    
+    void change(int index, int number) { // O(logn)
+        idxToNum[index] = number;
+
+        numToIdx[number].push(index); // O(logn)
+    }
+    
+    int find(int number) { // O(k * logn)
+        if(!numToIdx.count(number)) {
+            return -1;
+        }
+
+        auto& pq = numToIdx[number];
+
+        while(!pq.empty()) { // O(k * logn)
+            int idx = pq.top();
+
+            if(idxToNum[idx] == number) {
+                return idx;
+            }
+
+            pq.pop(); // O(logn)
+        } 
+
+        return -1;
+    }
+};
+
+// TC : change -> O(logn), find -> O(1)
+// SC : O(n)
+
+/**
+ * Your NumberContainers object will be instantiated and called as such:
+ * NumberContainers* obj = new NumberContainers();
+ * obj->change(index,number);
+ * int param_2 = obj->find(number);
+ */
