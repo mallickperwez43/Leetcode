@@ -1,0 +1,33 @@
+// Recusion + Memoization
+class Solution {
+public:
+    int n;
+    int solve(vector<int>& nums, int i, int k, vector<vector<int>>& dp) {
+        // base case
+        if(k == 0) {
+            return 0; // no more houses to be covered
+        }
+
+        if(i >= n) {
+            return INT_MAX;
+        }
+
+        // recursion
+        int take = max(nums[i], solve(nums, i + 2, k - 1, dp));
+
+        int no_take = solve(nums, i + 1, k, dp);
+
+        return dp[i][k] = min(take, no_take); 
+    }
+
+    int minCapability(vector<int>& nums, int k) {
+        n = nums.size();
+        
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, -1));
+
+        return solve(nums, 0, k, dp);
+    }
+};
+
+// TC : O(n * k)
+// SC : O(n * k)
