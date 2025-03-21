@@ -1,0 +1,92 @@
+// BRUTE FORCE
+class Solution {
+public:
+    vector<string> findAllRecipes(vector<string>& recipes, vector<vector<string>>& ingredients, vector<string>& supplies) {
+        int n = recipes.size();
+        vector<string> result;
+
+        unordered_set<string> st(supplies.begin(), supplies.end());
+
+        vector<bool> cooked(n, false);
+
+        int count = n;
+        while(count--) { // O(n)
+
+            for(int j = 0; j < n; j++) { // O(n)
+                if(cooked[j] == true) {
+                    continue;
+                }
+
+                bool banpayega = true;
+                for(int k = 0 ; k < ingredients[j].size(); k++) { // O(m)
+                    if(!st.count(ingredients[j][k])) {
+                        banpayega = false;
+                        break;
+                    }
+                }
+
+                if(banpayega) {
+                    st.insert(recipes[j]);
+                    result.push_back(recipes[j]);
+                    cooked[j] = true;
+                }
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n * n * m)
+// SC : O(size of supplies + n)
+
+
+// TOPOLOGICAL SORT --> KAHNS ALGO
+class Solution {
+public:
+    vector<string> findAllRecipes(vector<string>& recipes, vector<vector<string>>& ingredients, vector<string>& supplies) {
+        int n = recipes.size();
+        unordered_set<string> st(supplies.begin(), supplies.end());
+        
+        // adj
+        unordered_map<string, vector<int>> adj; // ing --> recipe
+
+        vector<int> indegree(n, 0);
+        for(int i = 0; i < n; i++) {
+            for(string& ing : ingredients[i]) {
+                if(!st.count(ing)) {
+                    adj[ing].push_back(i);
+                    indegree[i]++;
+                }
+            }
+        }
+
+        // Kahns algo
+        queue<int> q;
+        for(int i = 0; i < n; i++) {
+            if(indegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        vector<string> result;
+        while(!q.empty()) {
+            int i = q.front();
+            q.pop();
+            string recipe = recipes[i];
+            result.push_back(recipe);
+
+            for(int& idx : adj[recipe]) {
+                indegree[idx]--;
+                if(indegree[idx] == 0) {
+                    q.push(idx);
+                }
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(V + E) -> O(n + m + S) S -> supplies set
+// SC : O(V + E) -> O(n + m + S)
