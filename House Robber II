@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int solve(int start, int end, vector<int>& nums) {
+        int prevTaken = nums[start];
+        int prevNotTaken = 0;
+        
+        for(int i = start + 1; i <= end; i++) {
+            int take = nums[i] + prevNotTaken;
+            int notTake = prevTaken;
+
+            int maxRob = max(take, notTake);
+
+            prevNotTaken = prevTaken;
+            prevTaken = maxRob;
+        }
+
+        return prevTaken;
+    }
+
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        // base case
+        if(n == 1) {
+            return nums[0];
+        }
+
+        int startFrom0 = solve(0, n - 2, nums);
+        int startFrom1 = solve(1, n - 1, nums);
+
+        return max(startFrom0, startFrom1);
+    }
+};
