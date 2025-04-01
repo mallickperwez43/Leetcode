@@ -1,0 +1,54 @@
+// RECURSION + MEMOIZATION
+
+class Solution {
+public:
+    long long solve(int idx, int n, vector<vector<int>>& que, vector<long long>& dp) {
+        // base case
+        if(idx >= n) {
+            return 0;
+        }
+
+        if(dp[idx] != -1) {
+            return dp[idx];
+        }
+
+        // recursiom
+        
+        long long taken = que[idx][0] + solve(idx + que[idx][1] + 1, n, que, dp);
+        long long not_taken = solve(idx + 1, n, que, dp);
+
+        return dp[idx] = max(taken, not_taken);
+    }
+
+    long long mostPoints(vector<vector<int>>& questions) {
+        int n = questions.size();
+        
+        vector<long long> dp(n + 1, -1);
+
+        return solve(0, n, questions, dp);
+    }
+};
+
+
+// BOTTOM UP
+
+class Solution {
+public:
+    long long mostPoints(vector<vector<int>>& qns) {
+        int n = qns.size();
+
+        // base case
+        if(n == 1) {
+            return qns[0][0];
+        }
+
+        vector<long long> dp(200001, 0);
+        // dp[i] = max points gained by Qns from i to n - 1 
+
+        for(int i = n - 1; i >= 0; i--) {
+            dp[i] = max((qns[i][0] + dp[i + qns[i][1] + 1]), dp[i + 1]);
+        }
+
+        return dp[0];
+    }
+};
