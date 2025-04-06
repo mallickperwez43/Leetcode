@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int lenOfLongestPalindromeSubstr(int left, int right, int n, string& s) {
+        int len = 0;
+
+        while(left >= 0 && right < n) {
+            if(s[left] == s[right]) {
+                len += 2;
+                left--;
+                right++;
+            }
+            else {
+                break;
+            }
+        }
+
+        return len;
+    }
+
+    string longestPalindrome(string s) {
+        int n = s.length();
+        int maxLen = 1; // a single char is a palindrome itself
+        int startIdx = 0; // starting index of the palindrome string
+        
+        // odd length palindrome consideration
+        for(int i = 0; i < n; i++) {
+            int curLen = 1 + lenOfLongestPalindromeSubstr(i - 1, i + 1, n, s); // ---- i ---- (i ko  lelo , side dekho)
+            if(curLen > maxLen) {
+                maxLen = curLen;
+                startIdx = i - curLen / 2; // curLen -> ----- i -----
+            }
+        }
+
+        // even length palindrome consideration
+        for(int i = 1; i < n; i++) {
+            int curLen = lenOfLongestPalindromeSubstr(i - 1, i, n, s); // --- i --- (i - 1 prev hai aur i cur both inclusive)
+            if(curLen > maxLen) {
+                maxLen = curLen;
+                startIdx = i - curLen / 2; // curLen -> ----- i -----
+            }
+        }
+
+        return s.substr(startIdx, maxLen);
+    }
+};
