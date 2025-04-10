@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<int> findSmallestSetOfVertices(int n, vector<vector<int>>& edges) {
+        // edges[i] = [from_i, to_i]
+        // directed edge a ---> b 
+
+        // INTUTION -> Find kya karna hai
+        // the smallest set of vertices from which all nodes in the graph are reachable
+        // sare nodes visit karne ke liye koi aisi node lunga jisse sari ya almost sari nodes connected ho
+        // Yani har woh starting node jispar edge nhi aati ho
+        // DEDUCTION -> Har woh node result mein ayegi jiski indegree 0 hai
+
+        vector<int> indegree(n, 0);
+
+        for(vector<int>& edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+
+            // u ---> v // directed edge
+            indegree[v]++;
+        }
+
+        vector<int> result;
+        for(int i = 0; i < n; i++) {
+            if(indegree[i] == 0) {
+                result.push_back(i);
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n)
+// SC : O(n)
