@@ -1,0 +1,69 @@
+// Brute force
+
+class Solution {
+public:
+    int countSymmetricIntegers(int low, int high) {
+        int count = 0;
+
+        for(int num = low; num <= high; num++) {
+            string s = to_string(num);
+            
+            int l = s.length();
+
+            if(l & 1) { // l % 2 == 1 odd length
+                continue;
+            } 
+
+            int leftSum = 0;
+            int rightSum = 0;
+
+            for(int i = 0; i < l / 2; i++) {
+                leftSum += (s[i] - '0');
+            }
+
+            for(int i = l / 2; i < l; i++) {
+                rightSum += (s[i] - '0');
+            }
+
+            if(leftSum == rightSum) {
+                count++;
+            }
+        } 
+
+        return count;
+    }
+};
+
+// TC : O((high - low + 1) * digits)
+// SC : O(digits)
+
+
+// Optimal
+
+class Solution {
+public:
+    int countSymmetricIntegers(int low, int high) {
+        int count = 0;
+
+        for(int num = low; num <= high; num++) {
+            if(num >= 10 && num <= 99 && num % 11 == 0) { // 2 digit number divisible by 11 are symmetric
+                count++;
+            }
+            else if(num >= 1000 && num <= 9999) { // 4 digit number keliye check karlo left and right 
+                int first_digit = num / 1000;
+                int second_digit = (num / 100) % 10;
+                int third_digit = (num / 10) % 10;
+                int fourth_digit = (num / 1) % 10;
+
+                if(first_digit + second_digit == third_digit + fourth_digit) {
+                    count++;
+                }
+            }
+        } 
+
+        return count;
+    }
+};
+
+// TC : O(high - low + 1)
+// SC : O(1)
