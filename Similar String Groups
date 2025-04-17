@@ -1,0 +1,216 @@
+APPROACH 1 - DFS
+
+class Solution {
+public:
+    
+    bool isSimilar(string& s1, string& s2) {
+
+        int m = s1.length();
+        int diffCharsCnt = 0;
+
+        for(int i = 0; i < m; i++) {
+            if(s1[i] != s2[i]) {
+                diffCharsCnt++;
+            }
+        }
+
+        return diffCharsCnt == 2 || diffCharsCnt == 0;
+    }
+
+    void DFS(int node, unordered_map<int, vector<int>>& adj, vector<bool>& visited) {
+
+        visited[node] = true;
+        
+        for(int& ngbr : adj[node]) {
+             
+            if(!visited[ngbr]) {
+                DFS(ngbr, adj, visited);
+            }
+
+        }
+    }
+
+    int numSimilarGroups(vector<string>& strs) {
+        int n = strs.size();
+
+        // Building Graph
+        unordered_map<int, vector<int>> adj;
+
+        for(int i = 0; i < n; i++) {
+
+            for(int j = i + 1; j < n; j++) {
+
+                if(isSimilar(strs[i], strs[j])) {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
+
+            }
+        }
+
+        vector<bool> visited(n, false);
+        int compCnt = 0;
+
+        for(int i = 0; i < n; i++) {
+            if(!visited[i]) {
+                DFS(i, adj, visited);
+                compCnt++;
+            }
+        }
+
+        return compCnt;
+    }
+};
+
+
+APPROACH 2 - BFS
+
+class Solution {
+public:
+    
+    bool isSimilar(string& s1, string& s2) {
+
+        int m = s1.length();
+        int diffCharsCnt = 0;
+
+        for(int i = 0; i < m; i++) {
+            if(s1[i] != s2[i]) {
+                diffCharsCnt++;
+            }
+        }
+
+        return diffCharsCnt == 2 || diffCharsCnt == 0;
+    }
+
+    void BFS(int node, unordered_map<int, vector<int>>& adj, vector<bool>& visited) {
+
+        queue<int> q;
+        q.push(node);
+        visited[node] = true;
+
+        while(!q.empty()) {
+
+            int cur = q.front();
+            q.pop();
+
+            for(int& ngbr : adj[cur]) {
+                if(!visited[ngbr]) {
+                    q.push(ngbr);
+                    visited[ngbr] = true;
+                }
+            }
+        }
+        
+    }
+
+    int numSimilarGroups(vector<string>& strs) {
+        int n = strs.size();
+
+        // Building Graph
+        unordered_map<int, vector<int>> adj;
+
+        for(int i = 0; i < n; i++) {
+
+            for(int j = i + 1; j < n; j++) {
+
+                if(isSimilar(strs[i], strs[j])) {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
+
+            }
+        }
+
+        vector<bool> visited(n, false);
+        int compCnt = 0;
+
+        for(int i = 0; i < n; i++) {
+            if(!visited[i]) {
+                BFS(i, adj, visited);
+                compCnt++;
+            }
+        }
+
+        return compCnt;
+    }
+};
+
+
+APPROACH 3 - DSU
+
+class Solution {
+public:
+    vector<int> parent;
+    vector<int> rank;
+    
+    int find(int x) {
+        if(parent[x] == x) {
+            return x;
+        }
+
+        return parent[x] = find(parent[x]); // path compression
+    }
+
+    void Union(int x, int y) {
+        int parent_x = find(x);
+        int parent_y = find(y);
+
+        if(parent_x == parent_y) 
+            return;
+        
+        if(rank[parent_x] > rank[parent_y]) {
+            parent[parent_y] = parent_x;
+        }
+        else if(rank[parent_x] < rank[parent_y]) {
+            parent[parent_x] = parent_y;
+        }
+        else {
+            parent[parent_x] = parent_y;
+            rank[parent_y]++;
+        }
+    } 
+
+    bool isSimilar(string& s1, string& s2) {
+
+        int m = s1.length();
+        int diffCharCount = 0; // character at different position count
+
+        for(int i = 0; i < m; i++) {
+            if(s1[i] != s2[i]) {
+                diffCharCount++;
+            }
+        }
+
+        return diffCharCount == 2 || diffCharCount == 0;
+    }
+
+    int numSimilarGroups(vector<string>& strs) {
+        
+        int n = strs.size();
+
+        parent.resize(n);
+        rank.resize(n);
+
+        for(int i = 0; i < n; i++) {
+            parent[i] = i;
+            rank[i] = 0;
+        }
+
+        int groupCount = n; // starting me all are alone int their single member group
+
+        for(int i = 0; i < n; i++) {
+
+            for(int j = i + 1; j < n; j++) {
+
+                if(isSimilar(strs[i], strs[j]) && find(i) != find(j)) {
+                    Union(i, j);
+                    groupCount--;
+                }
+
+            }
+
+        } 
+        
+        return groupCount;
+    }
+};
