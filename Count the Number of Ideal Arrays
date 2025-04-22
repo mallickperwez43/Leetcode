@@ -1,0 +1,130 @@
+// BRUTE FORCE 
+// RECURSION + MEMOIZATION --> TLE
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+    
+    int solve(int start, int count, int n, int maxVal, vector<vector<int>>& dp) {
+        // base case
+        if(count == n) { // found an ideal array of length n
+            return 1;
+        }
+        
+        if(dp[start][count] != -1) {
+            return dp[start][count];
+        }
+
+        long long result = 0;
+
+        for(int multiplier = 1; start * multiplier <= maxVal; multiplier++) {
+            result = (result + solve(start * multiplier, count + 1, n, maxVal, dp)) % M;
+        }
+
+        return dp[start][count] = result;
+    }
+
+    int idealArrays(int n, int maxValue) {
+        long long result = 0;
+         
+        vector<vector<int>> dp(maxValue + 1, vector<int>(n + 1, -1));
+        // dp[i][j] = dp[val][count]
+
+        for(int startVal = 1; startVal <= maxValue; startVal++) {
+            result = (result + solve(startVal, 1, n, maxValue, dp)) % M;
+        }
+
+        return result; 
+    }
+};
+
+// TC : O(maxVal * n)
+// SC : O(maxVal * n)
+
+
+// OPTIMAL
+// Modular nCr --> Fermats Little Theorem
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+     
+    void findSets(int m, vector<int>& count, vector<vector<int>>& dp) { // O(log(maxVal) * 15) ~ O(log(maxVal))
+        // base case
+        if(dp[m][1] != 0) 
+            return;
+        
+        dp[m][1] = 1;
+        count[1]++;
+
+        for(int div = 2; div <= m; div++) {
+            if(m % div == 0) {
+                findSets(m / div, count, dp);
+
+                // calculate for each sets of every length
+                for(int len = 1; len < 15; len++) {
+                    if(dp[m / div][len] != 0) {    
+                        dp[m][len + 1] += dp[m / div][len];
+                        count[len + 1] += dp[m / div][len];
+                    }
+                }
+            }
+        }
+    } 
+
+    int findPower(long long a, long long b) {
+        // base case
+        if(b == 0) 
+            return 1;
+        
+        long long half = findPower(a, b / 2);
+        long long result = (half * half) % M;
+        if(b & 1) {
+            result = (result * a) % M;
+        }
+
+        return result;
+    }
+
+    int modularnCr(int n, int r, vector<long long>& fact) {
+        // base case
+        if(r < 0 || r > n)
+            return 0;
+        
+        long long a = (fact[n]) % M;
+        long long b = (fact[r] * fact[n - r]) % M;
+
+        return (a * findPower(b, M - 2)) % M;
+    }
+
+    int idealArrays(int n, int maxValue) {
+        vector<vector<int>> dp(maxValue + 1, vector<int>(15, 0)); // dp[val][l] = no of sets ending at val having length l
+        vector<int> count(15, 0); // count[l] = count of sets of len l     
+
+        // Find sets count
+        for(int val = 1; val <= maxValue; val++) { // O(maxVal * log(maxVal))
+            findSets(val, count, dp);
+        }
+
+        // Precompute factorials
+        vector<long long> fact(n + 1, 1);
+        for(int i = 2; i <= n; i++) { // O(n)
+            fact[i] = (fact[i - 1] * i) % M;
+        }
+         
+        long long result = 0;
+        for(int len = 1; len < 15; len++) { 
+            
+            if(n < len) { // early return
+                break;
+            }
+
+            if(count[len] != 0) {
+                long long possibilities = modularnCr(n - 1, len - 1, fact);
+                result = (result + (count[len] * possibilities) % M) % M;
+            }
+        }
+
+        return (int)result;
+    }
+};
