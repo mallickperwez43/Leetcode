@@ -1,0 +1,55 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
+
+// BRUTE FORCE -> O(n^2)
+class Solution {
+public:
+    
+    int findPos(vector<int>& in, int& el, int size) {
+        for(int i = 0; i < size; i++) {
+            if(in[i] == el) {
+                return i;
+            }
+        }
+
+        return -1; // never reached here
+    }
+
+    TreeNode* buildTreeUtil(vector<int>& in, vector<int>& post, int& postOrderIdx, int inStart, int inEnd, int size) {
+        // base case
+        if(postOrderIdx < 0 || inStart > inEnd) { // no more node needed
+            return NULL;
+        }
+
+        int el = post[postOrderIdx];
+        postOrderIdx--; // move to the next root node
+        int posOfElinInOrder = findPos(in, el, size);
+        
+        // make root
+        TreeNode* root = new TreeNode(el);
+
+        // recursive calls
+        root -> right = buildTreeUtil(in, post, postOrderIdx, posOfElinInOrder + 1, inEnd, size);
+        root -> left  = buildTreeUtil(in, post, postOrderIdx, inStart, posOfElinInOrder - 1, size);
+
+        return root;
+    }
+
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int n = inorder.size();
+
+        int postOrderIdx = n - 1;
+        TreeNode* rootNode = buildTreeUtil(inorder, postorder, postOrderIdx, 0, n - 1, n);
+        return rootNode;
+    }
+};
