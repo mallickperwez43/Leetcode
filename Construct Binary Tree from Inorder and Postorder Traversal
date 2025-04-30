@@ -33,7 +33,7 @@ public:
 
         int el = post[postOrderIdx];
         postOrderIdx--; // move to the next root node
-        int posOfElinInOrder = findPos(in, el, size);
+        int posOfElinInOrder = findPos(in, el, size); // O(n)
         
         // make root
         TreeNode* root = new TreeNode(el);
@@ -50,6 +50,46 @@ public:
 
         int postOrderIdx = n - 1;
         TreeNode* rootNode = buildTreeUtil(inorder, postorder, postOrderIdx, 0, n - 1, n);
+        return rootNode;
+    }
+};
+
+
+// OPTIMAL -> O(n)
+class Solution {
+public:
+    
+    TreeNode* buildTreeUtil(vector<int>& in, vector<int>& post, int& postOrderIdx, int inStart, int inEnd, int size, unordered_map<int, int>& inOrderNodeToIdx) {
+        // base case
+        if(postOrderIdx < 0 || inStart > inEnd) { // no more node needed
+            return NULL;
+        }
+
+        int el = post[postOrderIdx];
+        postOrderIdx--; // move to the next root node
+        int posOfElinInOrder = inOrderNodeToIdx[el]; // O(1)
+        
+        // make root
+        TreeNode* root = new TreeNode(el);
+
+        // recursive calls
+        root -> right = buildTreeUtil(in, post, postOrderIdx, posOfElinInOrder + 1, inEnd, size, inOrderNodeToIdx);
+        root -> left  = buildTreeUtil(in, post, postOrderIdx, inStart, posOfElinInOrder - 1, size, inOrderNodeToIdx);
+
+        return root;
+    }
+
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int n = inorder.size();
+        
+        // create the mapping of inorder nodes to their index
+        unordered_map<int, int> inOrderNodeToIdx;
+        for(int i = 0; i < n; i++) {
+            inOrderNodeToIdx[inorder[i]] = i;
+        }
+
+        int postOrderIdx = n - 1;
+        TreeNode* rootNode = buildTreeUtil(inorder, postorder, postOrderIdx, 0, n - 1, n, inOrderNodeToIdx);
         return rootNode;
     }
 };
