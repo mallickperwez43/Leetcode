@@ -1,0 +1,95 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
+
+// BRUTE FORCE -> O(n^2)
+class Solution {
+public:
+    
+    int findPos(vector<int>& in, int& el, int size) {
+        for(int i = 0; i < size; i++) {
+            if(in[i] == el) {
+                return i;
+            }
+        }
+
+        return -1; // never reached here
+    }
+
+    TreeNode* buildTreeUtil(vector<int>& pre, vector<int>& in, int& preOrderIdx, int inStart, int inEnd, int size) {
+        // base case
+        if(preOrderIdx >= size || inStart > inEnd) { // no more node needed
+            return NULL;
+        }
+
+        int el = pre[preOrderIdx];
+        preOrderIdx++; // next root pr jao
+        int posOfElinInOrder = findPos(in, el, size); // O(n)
+        
+        // make root
+        TreeNode* root = new TreeNode(el);
+
+        // recursive call
+        root -> left  = buildTreeUtil(pre, in, preOrderIdx, inStart, posOfElinInOrder - 1, size);
+        root -> right = buildTreeUtil(pre, in, preOrderIdx, posOfElinInOrder + 1, inEnd, size);
+
+        return root;
+    }
+
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int n = preorder.size();
+        int preOrderIdx = 0;
+        TreeNode* rootNode = buildTreeUtil(preorder, inorder, preOrderIdx, 0, n - 1, n);
+        return rootNode;
+    }
+};
+
+
+// OPTIMAL -> O(n)
+class Solution {
+public:
+    
+    TreeNode* buildTreeUtil(vector<int>& pre, vector<int>& in, int& preOrderIdx, int inStart, int inEnd, int size, unordered_map<int, int>& inOrderNodeToIdx) {
+        // base case
+        if(preOrderIdx >= size || inStart > inEnd) { // no more node needed
+            return NULL;
+        }
+
+        int el = pre[preOrderIdx];
+        preOrderIdx++; // next root pr jao
+
+        int posOfElinInOrder = inOrderNodeToIdx[el]; // O(1)
+        
+        // make root
+        TreeNode* root = new TreeNode(el);
+
+        // recursive call
+        root -> left  = buildTreeUtil(pre, in, preOrderIdx, inStart, posOfElinInOrder - 1, size, inOrderNodeToIdx);
+        root -> right = buildTreeUtil(pre, in, preOrderIdx, posOfElinInOrder + 1, inEnd, size, inOrderNodeToIdx);
+
+        return root;
+    }
+
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int n = preorder.size();
+
+        // create the mapping of inorder nodes to their index
+        unordered_map<int, int> inOrderNodeToIdx;
+        for(int i = 0; i < n; i++) {
+            inOrderNodeToIdx[inorder[i]] = i;
+        }
+
+        int preOrderIdx = 0;
+        TreeNode* rootNode = buildTreeUtil(preorder, inorder, preOrderIdx, 0, n - 1, n, inOrderNodeToIdx);
+        return rootNode;
+    }
+};
