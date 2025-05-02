@@ -1,0 +1,60 @@
+class Solution {
+public:
+    string pushDominoes(string dominoes) {
+        int n = dominoes.length();
+
+        vector<int> leftClosestR(n);
+        vector<int> rightClosestL(n);
+
+        // Move from left to right to find leftClosestR
+        for(int i = 0; i < n; i++) {
+            if(dominoes[i] == 'R') {
+                leftClosestR[i] = i; // R push starts from me
+            }
+            else if(dominoes[i] == '.') {
+                leftClosestR[i] = i > 0 ? leftClosestR[i - 1] : -1;
+            }
+            else {
+                leftClosestR[i] = -1;
+            }
+        }
+
+        // Move from right to left to find rightClosestL
+        for(int i = n - 1; i >= 0; i--) {
+            if(dominoes[i] == 'L') {
+                rightClosestL[i] = i; // L push starts from me
+            }
+            else if(dominoes[i] == '.') {
+                rightClosestL[i] = i < n - 1 ? rightClosestL[i + 1] : -1;
+            }
+            else {
+                rightClosestL[i] = -1;
+            }
+        }
+
+        // calculate left and right nearest pushes and calculate answer accordingly
+        string result(n, ' ');
+        for(int i = 0; i < n; i++) {
+            int distRightL = abs(i - rightClosestL[i]);
+            int distLeftR  = abs(i - leftClosestR[i]); 
+
+            if(leftClosestR[i] == rightClosestL[i]) { // no push
+                result[i] = '.';
+            } 
+            else if(leftClosestR[i] == -1) {
+                result[i] = 'L';
+            }
+            else if(rightClosestL[i] == -1) {
+                result[i] = 'R';
+            }
+            else if(distRightL == distLeftR) { // equal distance force so no effect
+                result[i] = '.';
+            }
+            else {
+                result[i] = (distRightL < distLeftR) ? 'L' : 'R';
+            }
+        }
+
+        return result;
+    }
+};
