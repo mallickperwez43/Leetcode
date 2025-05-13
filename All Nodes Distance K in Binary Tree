@@ -1,0 +1,95 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    
+    void createMapping(TreeNode* root, unordered_map<TreeNode*, TreeNode*>& nodeToParent) {
+        queue<TreeNode*> q;
+        q.push(root);
+        nodeToParent[root] = NULL; // root has no parent
+
+        while(!q.empty()) {
+            TreeNode* frontNode = q.front();
+            q.pop();
+
+            if(frontNode -> left != NULL) {
+                nodeToParent[frontNode -> left] = frontNode;
+                q.push(frontNode -> left);
+            }
+
+            if(frontNode -> right != NULL) {
+                nodeToParent[frontNode -> right] = frontNode;
+                q.push(frontNode -> right);
+            }
+        }
+    }
+    
+    void nodesAtDistK(TreeNode* root, int k, vector<int>& result, unordered_map<TreeNode*, TreeNode*>& nodeToParent) {
+        unordered_set<TreeNode*> vis;
+
+        queue<TreeNode*> q;
+        q.push(root);
+        vis.insert(root);
+        
+        int curLevel = 0;
+
+        while(!q.empty()) {
+            int n = q.size();
+            
+            if(curLevel == k) {
+                while(!q.empty()) {
+                    TreeNode* front = q.front();
+                    q.pop();
+                    result.push_back(front -> val);
+                }
+                break;
+            }
+
+            while(n--) {
+                TreeNode* frontNode = q.front();
+                q.pop();
+
+                // leftchild
+                if(frontNode -> left != NULL && vis.count(frontNode -> left) == 0) {
+                    vis.insert(frontNode -> left);
+                    q.push(frontNode -> left);
+                }
+
+                // rightchild
+                if(frontNode -> right != NULL && vis.count(frontNode -> right) == 0) {
+                    vis.insert(frontNode -> right);
+                    q.push(frontNode -> right);
+                }
+
+                // parent
+                if(nodeToParent[frontNode] != NULL && vis.count(nodeToParent[frontNode]) == 0) {
+                    vis.insert(nodeToParent[frontNode]);
+                    q.push(nodeToParent[frontNode]);
+                }
+            }
+
+            curLevel++;
+        }
+    }
+
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        // 1] create node to parent mapping 
+        // 2] do BFS from target and get nodes at a distance of k from it
+
+        unordered_map<TreeNode*, TreeNode*> nodeToParent;
+        vector<int> result;
+
+        createMapping(root, nodeToParent);
+
+        nodesAtDistK(target, k, result, nodeToParent);
+
+        return result;
+    }
+};
