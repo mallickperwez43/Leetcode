@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int hIndex(vector<int>& citations) {
+        int n = citations.size();
+
+        int l = 0;
+        int r = n - 1;
+        int minValIdx = 0; // the value for which the H index is matching max
+
+        while(l <= r) {
+            int mid = l + (r - l) / 2;
+
+            if(citations[mid] >= n - mid) {
+                minValIdx = n - mid; // found an idx
+                r = mid - 1; // try for lower
+            }
+            else {
+                l = mid + 1; // try higher
+            }
+        }
+
+        return minValIdx;
+    }
+};
