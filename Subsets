@@ -24,3 +24,30 @@ public:
        return ans; 
     }
 };
+
+// way 2
+
+class Solution {
+private:
+    void backtrack(int start, vector<int> &nums, vector<int> &tempList, vector<vector<int>> &list){
+        list.push_back(tempList);
+
+        for(int i = start; i < nums.size(); i++){
+            // add to temp list
+            tempList.push_back(nums[i]);
+            // recursive call
+            backtrack(i + 1, nums, tempList, list);
+            // backtrack
+            tempList.pop_back();
+        }
+    }
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> list;
+        vector<int> tempList;
+
+        backtrack(0, nums, tempList, list);
+
+        return list;
+    }
+};
