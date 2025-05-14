@@ -1,0 +1,26 @@
+class Solution {
+private:
+    void backtrack(int idx, vector<int>& nums, vector<int>& templist, vector<vector<int>>& list) {
+        list.push_back(templist);
+
+        for(int cur = idx; cur < nums.size(); cur++) {
+            if(cur != idx && nums[cur] == nums[cur - 1]) { // skip duplicate
+                continue;
+            }
+
+            templist.push_back(nums[cur]); // Do
+            backtrack(cur + 1, nums, templist, list); // Explore
+            templist.pop_back(); // Undo;
+        }
+    } 
+
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> list;
+        vector<int> templist;
+        backtrack(0, nums, templist, list);
+
+        return list;
+    }
+};
