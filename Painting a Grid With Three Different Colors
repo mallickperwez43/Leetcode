@@ -1,0 +1,79 @@
+class Solution {
+public:
+    
+    vector<string> columnStates;
+    
+    int M = 1e9 + 7;
+    
+    // TC : O(3 * 2^m-1)
+    void generateColumnStates(string cur, char prevCh, int l, int m) {
+        if(l == m) {
+            columnStates.push_back(cur);
+            return;
+        }
+
+        for(char ch : {'R', 'G', 'B'}) {
+            if(ch == prevCh) 
+                continue;
+            
+            generateColumnStates(cur + ch, ch, l + 1, m);
+        }
+    }
+    
+    // TC : O(n * S * (S * m)) = O(n * m * S^2)
+    int solve(int remainCols, int prevIdx, int m, vector<vector<int>>& dp) {
+        if(remainCols == 0) { 
+            return 1;
+        }
+        
+        if(dp[remainCols][prevIdx] != -1) {
+            return dp[remainCols][prevIdx];
+        } 
+            
+        int ways = 0;
+        string prevState = columnStates[prevIdx];
+
+        for(int i = 0; i < columnStates.size(); i++) {
+            if(i == prevIdx) continue;
+
+            string curState = columnStates[i];
+            bool valid = true;
+
+            for(int j = 0; j < m; j++) { // iterating on curState and prevState to check valid
+                if(curState[j] == prevState[j]) {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if(valid) {
+                ways = (ways + solve(remainCols - 1, i, m, dp)) % M; 
+            }
+        }
+
+        return dp[remainCols][prevIdx] = ways;
+    }
+
+    int colorTheGrid(int m, int n) {
+        // Step 1 : Generate column states
+        generateColumnStates("", '#', 0, m); // TC : O(3 * 2^m-1) ~  O(2^m)
+        
+        // memoize
+        int totalStates = columnStates.size();
+
+        vector<vector<int>> dp(n + 1, vector<int>(totalStates + 1, -1));
+
+        // Step 2 : Add ways using solve 
+        int result = 0;
+        for(int i = 0; i < columnStates.size(); i++) {
+            result = (result + solve(n - 1, i, m, dp)) % M;
+        }
+
+        // Step 3 : Writing solve function
+
+        return result;
+    }
+};
+
+// TC : O(2^m * (n * m * S^2))
+// SC : O(S + (n * S))
