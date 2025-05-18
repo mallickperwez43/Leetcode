@@ -1,0 +1,74 @@
+class Solution {
+public:
+    
+    vector<string> rowStates;
+
+    int M = 1e9 + 7;
+    
+    void generateRowStates(string cur, char prevCh, int l) {
+        if(l == 3) {
+            rowStates.push_back(cur);
+            return;
+        }
+
+        for(char ch : {'R', 'Y', 'G'}) {
+            if(ch == prevCh) 
+                continue;
+            
+            generateRowStates(cur + ch, ch, l + 1);
+            
+        }
+    }
+    
+    int solve(int remainRows, int prevIdx, vector<vector<int>>& dp) {
+        if(remainRows == 0) {
+            return 1;
+        }
+
+        if(dp[remainRows][prevIdx] != -1) {
+            return dp[remainRows][prevIdx];
+        }
+
+        int ways = 0;
+        string prevState = rowStates[prevIdx];
+
+        for(int i = 0; i < rowStates.size(); i++) {
+            if(i == prevIdx) continue;
+
+            string curState = rowStates[i];
+            bool valid = true;
+
+            for(int j = 0; j < 3; j++) { // iterating on curState and prevState to check validity
+                if(prevState[j] == curState[j]) {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if(valid) {
+                ways = (ways + solve(remainRows - 1, i, dp)) % M;
+            }
+        } 
+
+        return dp[remainRows][prevIdx] = ways;
+    }
+
+    int numOfWays(int n) {
+        // Step 1 : Generate all row states
+        generateRowStates("", '#', 0); 
+
+        // memoize
+        int totalRowStates = rowStates.size();
+        vector<vector<int>> dp(n + 1, vector<int>(totalRowStates + 1, -1));
+
+        // Step 2 : Using solve() count ways to fill
+        int result = 0;
+        for(int i = 0; i < rowStates.size(); i++) {
+            result = (result + solve(n - 1, i, dp)) % M;
+        }  
+
+        // Step 3 : Write solve()
+
+        return result;
+    }
+};
