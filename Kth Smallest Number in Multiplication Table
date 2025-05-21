@@ -1,0 +1,32 @@
+class Solution {
+public:
+    
+    bool hasAtLeastKOrMore(int cur, int m, int n, int k) {
+        int count = 0;
+        for(int i = 1; i <= m; i++) {
+            count += min((cur / i), n);
+        }
+
+        return count >= k;
+    }
+
+    int findKthNumber(int m, int n, int k) {
+        int low  = 1;
+        int high = m * n;
+        int ans  = -1;
+
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if(hasAtLeastKOrMore(mid, m, n, k)) {
+                ans = mid;
+                high = mid - 1; // try for lower
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+
+        return ans;
+    }
+};
