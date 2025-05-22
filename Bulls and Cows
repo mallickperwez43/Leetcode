@@ -1,0 +1,30 @@
+class Solution {
+public:
+    string getHint(string secret, string guess) {
+        int n = secret.length();
+
+        int bullCount = 0;
+        vector<int> freqDigitInSecret(10, 0); // To maintain freq of digit in secret 
+        vector<int> freqDigitInGuess(10, 0); // To maintain freq of digit in guess
+
+        for(int i = 0; i < n; i++) {
+            if(secret[i] == guess[i]) { // matched -> bull
+                bullCount++;
+            }
+            else { // mismatched
+                freqDigitInSecret[secret[i] - '0']++; 
+                freqDigitInGuess[guess[i] - '0']++;
+            }
+        }
+
+        // Now I have bulls count
+
+        // I will just need the misplaced but min so I can match
+        int cowCount = 0;
+        for(int i = 0; i < 10; i++) {
+            cowCount += min(freqDigitInSecret[i], freqDigitInGuess[i]);
+        }
+
+        return to_string(bullCount) + "A" + to_string(cowCount) + "B";
+    }
+};
