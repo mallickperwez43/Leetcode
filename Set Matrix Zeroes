@@ -1,0 +1,129 @@
+// BRUTE FORCE 
+
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        vector<vector<int>> temp = matrix;
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(matrix[i][j] == 0) {
+                    for(int k = 0; k < n; k++) {
+                        temp[i][k] = 0; // marking ith row as 0
+                    }
+
+                    for(int k = 0; k < m; k++) {
+                        temp[k][j] = 0; // marking jth col as 0
+                    }
+                }
+            }
+        }
+
+        matrix = temp;
+    }
+};
+
+// TC : O(m * n * (m + n))
+// SC : O(m * n)
+
+
+// BETTER 
+
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        vector<bool> row(m, false);
+        vector<bool> col(n, false);
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(matrix[i][j] == 0) {
+                    row[i] = true;
+                    col[j] = true;
+                }
+            }
+        }
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(row[i] == true || col[j] == true) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+    }
+};
+
+// TC : O(m * n)
+// SC : O(m + n)
+
+
+// OPTIMAL 
+
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        // Check 0th row impacted hai ya nhi
+        bool firstRowImpacted = false;
+        for(int col = 0; col < n; col++) {
+            if(matrix[0][col] == 0) {
+                firstRowImpacted = true;
+                break;
+            }
+        }
+
+        // Check 0th col impacted hai ya nhi
+        bool firstColImpacted = false;
+        for(int row = 0; row < m; row++) {
+            if(matrix[row][0] == 0) {
+                firstColImpacted = true;
+                break;
+            }
+        }
+
+        // Set markers in the 0th row/col
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+
+        // Reiterate again excluding 0th row and col
+        for(int i = 1; i < m; i++) {
+            for(int j = 1; j < n; j++) {
+                if(matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        // If 0th row is impacted -> impact it
+        if(firstRowImpacted) {
+            for(int col = 0; col < n; col++) {
+                matrix[0][col] = 0;
+            }
+        }
+
+        // If 0th col is impacted -> impact it
+        if(firstColImpacted) {
+            for(int row = 0; row < m; row++) {
+                matrix[row][0] = 0;
+            }
+        }
+    }
+};
+
+// TC : O(m * n)
+// SC : O(1)
