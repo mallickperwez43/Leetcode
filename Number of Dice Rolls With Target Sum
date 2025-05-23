@@ -1,0 +1,63 @@
+// Recursion + memoization
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+
+    int solve(int faces, int diceCnt, int targetSum, vector<vector<int>>& dp) {
+        // base case
+        if(diceCnt == 0 && targetSum == 0) {
+            return 1; // found a way
+        }
+        if(diceCnt == 0 || targetSum <= 0) {
+            return 0; // either no dice is left or found target but doce still remain
+        }
+        
+        if(dp[diceCnt][targetSum] != -1) {
+            return dp[diceCnt][targetSum];
+        }
+          
+        int ways = 0;
+
+        for(int curFace = 1; curFace <= faces; curFace++) {
+            ways = ((ways % M) + solve(faces, diceCnt - 1, targetSum - curFace, dp) % M) % M;
+        }
+
+        return dp[diceCnt][targetSum] = ways % M;
+    }
+    
+    int numRollsToTarget(int n, int k, int target) {
+
+        vector<vector<int>> dp(n + 1, vector<int>(target + 1, -1));
+
+        return solve(k, n, target, dp);    
+    }
+};
+
+
+// Bottom up
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+    
+    int numRollsToTarget(int n, int k, int target) {
+
+        vector<vector<int>> dp(n + 1, vector<int>(target + 1, 0));
+        // dp[i][j] = no of ways to form jth sum with diceCnt equal to i
+
+        dp[0][0] = 1; // there is 1 way to form sum 0 with 0 no of dice 
+        
+        for(int diceCnt = 1; diceCnt <= n; diceCnt++) {
+            for(int sum = 1; sum <= target; sum++) {
+                for(int curFace = 1; curFace <= k; curFace++) {
+                    if(sum - curFace >= 0) {
+                        dp[diceCnt][sum] = (dp[diceCnt][sum] + dp[diceCnt - 1][sum - curFace]) % M;
+                    }
+                }
+            }
+        }
+
+        return dp[n][target];    
+    }
+};
