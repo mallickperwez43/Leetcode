@@ -1,0 +1,62 @@
+// Approach 1 -> faster
+
+class Solution {
+public:
+    typedef long long ll;
+
+    long long maximumValueSum(vector<int>& nums, int k, vector<vector<int>>& edges) {
+        ll sum         = 0;
+        int count      = 0;
+        int minNuksaan = INT_MAX;
+
+        for(ll num : nums) {
+
+            if((num ^ k) > num) {
+                count++; // one more num xored
+                sum += (num ^ k);
+            }
+            else {
+                sum += (num);
+            }
+
+            minNuksaan = min((ll)minNuksaan, abs(num - (num ^ k)));
+        }
+
+        return (count & 1) ? sum - minNuksaan : sum;
+    }
+};
+
+
+// Approach 2 -> slower
+
+class Solution {
+public:
+    typedef long long ll;
+
+    long long maximumValueSum(vector<int>& nums, int k, vector<vector<int>>& edges) {
+        vector<int> fayda;
+
+        ll normalSum = 0;
+
+        for(int i = 0; i < nums.size(); i++) {
+            normalSum += nums[i];
+
+            fayda.push_back((nums[i] ^ k) - nums[i]);
+        }
+
+        sort(fayda.begin(), fayda.end(), greater<int>()); // Desecnding order
+
+        int n = fayda.size();
+        ll profit = 0;
+        for(int i = 0; i < n - 1; i += 2) {
+
+            ll pairSum = fayda[i] + fayda[i + 1];
+
+            if(pairSum > 0) {
+                profit += pairSum;
+            }
+        }
+
+        return normalSum + profit;
+    }
+};
