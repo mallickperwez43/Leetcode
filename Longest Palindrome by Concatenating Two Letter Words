@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int longestPalindrome(vector<string>& words) {
+        unordered_map<string, int> mp;
+
+        int result = 0;
+        
+        // step 1 : check reversed words in map and form answer accordingly
+        for(string& word : words) {
+            string reversedWord = word;
+            swap(reversedWord[0], reversedWord[1]);
+
+            if(mp[reversedWord] > 0) {
+                result += 4;
+                mp[reversedWord]--;
+            }
+            else {
+                mp[word]++;
+            }
+        } 
+
+        // step 2 : check for equal char words and use only once
+        for(auto& it : mp) {
+            string word = it.first;
+            int count = it.second;
+
+            if(count > 0 && word[0] == word[1]) {
+                result += 2;
+                break;
+            }
+        } 
+
+        return result;
+    }
+};
