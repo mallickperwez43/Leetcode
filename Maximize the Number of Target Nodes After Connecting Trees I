@@ -1,0 +1,131 @@
+// BFS
+
+class Solution {
+public:
+    
+    int bfs(int cur, unordered_map<int, vector<int>>& adj, int d, int n) {
+        queue<pair<int, int>> q;
+        q.push({cur, 0});
+        vector<int> visited(n, false);
+        visited[cur] = true;
+        
+        int count = 0; // count of target nodes
+        while(!q.empty()) {
+            int curNode = q.front().first;
+            int dist    = q.front().second;
+            q.pop();
+
+            if(dist > d) {
+                continue;
+            }
+
+            count++; // include curNode as target node
+
+            // visit neighbour
+            for(auto& ngbr : adj[curNode]) {
+                if(!visited[ngbr]) {
+                    visited[ngbr] = true;
+                    q.push({ngbr, dist + 1});
+                }
+            } 
+        }
+
+        return count;
+    }
+
+    vector<int> findCount(vector<vector<int>>& edges, int d, int n) {
+        // adjacency list
+        unordered_map<int, vector<int>> adj;
+        for(auto& edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        vector<int> result(n);
+        for(int i = 0; i < n; i++) {
+            result[i] = bfs(i, adj, d, n);
+        }
+
+        return result;
+    } 
+
+    vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2, int k) {
+        // Tree1 me kitne no of nodes hain
+        int N = edges1.size() + 1;
+        // Tree2 me kitne no of nodes hain
+        int M = edges2.size() + 1;
+
+        vector<int> result1 = findCount(edges1, k, N); // stores targetnodes count from each node within tree1 within K distance
+        vector<int> result2 = findCount(edges2, k - 1, M); // stores targetnodes count from each node within tree2 within K-1 distance
+
+        int maxTargetNodesCount = *max_element(result2.begin(), result2.end());
+
+        for(int i = 0; i < N; i++) {
+            result1[i] += maxTargetNodesCount;
+        }
+
+        return result1;
+    }
+};
+
+
+// DFS
+
+class Solution {
+public:
+    
+    int dfs(int cur, unordered_map<int, vector<int>>& adj, int d, int curNodeKaParent) {
+        if(d < 0)
+            return 0;
+        
+        int count = 1;  // counting curnode as 1
+
+        for(int& ngbr : adj[cur]) {
+            if(ngbr != curNodeKaParent) {
+                count += dfs(ngbr, adj, d - 1, cur);
+            }
+        }
+
+        return count;
+    }
+
+    vector<int> findCount(vector<vector<int>>& edges, int d, int n) {
+        // adjacency list
+        unordered_map<int, vector<int>> adj;
+        for(auto& edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        vector<int> result(n);
+        for(int i = 0; i < n; i++) {
+            result[i] = dfs(i, adj, d, -1);
+        }
+
+        return result;
+    } 
+
+    vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2, int k) {
+        // Tree1 me kitne no of nodes hain
+        int N = edges1.size() + 1;
+        // Tree2 me kitne no of nodes hain
+        int M = edges2.size() + 1;
+
+        vector<int> result1 = findCount(edges1, k, N); // stores targetnodes count from each node within tree1 within K distance
+        vector<int> result2 = findCount(edges2, k - 1, M); // stores targetnodes count from each node within tree2 within K-1 distance
+
+        int maxTargetNodesCount = *max_element(result2.begin(), result2.end());
+
+        for(int i = 0; i < N; i++) {
+            result1[i] += maxTargetNodesCount;
+        }
+
+        return result1;
+    }
+};
