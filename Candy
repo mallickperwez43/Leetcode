@@ -1,0 +1,76 @@
+// Getting max from neighbours O(n) space
+
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        int n = ratings.size();
+
+        vector<int> count(n, 1);
+
+        for(int i = 1; i < n; i++) {
+            if(ratings[i] > ratings[i - 1]) {
+                count[i] = max(count[i], count[i - 1] + 1);
+            }
+        }
+
+        for(int i = n - 2; i >= 0; i--) {
+            if(ratings[i] > ratings[i + 1]) {
+                count[i] = max(count[i], count[i + 1] + 1);
+            }
+        }
+
+        int result = 0;
+        for(int i = 0; i < n; i++) {
+            result += count[i];
+        }
+
+        return result;
+    }
+};
+
+// TC: O(3n)
+// SC: O(n)
+
+// Optimal O(1) space
+
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        int n = ratings.size();
+        int candies = n; // Each person gets one candy
+
+        int i = 1;
+        while(i < n) {
+
+            if(ratings[i] == ratings[i - 1]) { 
+                i++;
+                continue;
+            } 
+
+            // Increasing slope - peak
+            int peak = 0;
+            while(ratings[i] > ratings[i - 1]) {
+                peak++;
+                candies += peak;
+                i++;
+                if(i == n) 
+                    return candies;
+            }
+
+            // Decreasing slope - dip
+            int dip = 0;
+            while(i < n && ratings[i] < ratings[i - 1]) {
+                dip++;
+                candies += dip;
+                i++;        
+            }
+
+            candies -= min(peak, dip);
+        }
+
+        return candies;
+    }
+};
+
+// TC: O(n)
+// SC: O(1)
