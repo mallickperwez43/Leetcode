@@ -1,0 +1,86 @@
+// Actual with comments
+
+class Solution {
+public:
+    int Count(long cur, long next, int n){
+        int countNum = 0; // numbers formed by cur prefix which is in limit
+        
+        while(cur <= n){
+            countNum += (next - cur); 
+
+            cur *= 10;  
+            next *= 10; 
+
+            next = min(next, long(n + 1)); // max range of next is n + 1 bcoz cur max range is n
+        }
+
+        return countNum;
+    }
+
+    int findKthNumber(int n, int k) {
+        int cur = 1;
+        k -= 1; // Since we start from the first number (1) we need k - 1 more numbers  
+
+        while(k > 0){
+            int count = Count(cur, cur + 1, n); // function to get all possible numbers cur prefix can form in range n
+
+            if(count <= k){
+                cur++; // going to next one because we need more
+                k -= count; // skipping the elements under cur prefx tree
+            }
+            else{ // go deeper
+                cur *= 10; // we can have [0 - 9] range inclusive so power of 10
+                k -= 1; // considered the root
+            }
+        }
+
+        return cur;
+    }
+};
+
+// TC : O(log n ^ 2)
+// SC : O(log n)
+
+
+
+// self practice
+
+class Solution {
+public:
+    
+    int countNums(long long curr, long long next, int n) {
+        int numsCnt = 0;
+
+        while(curr <= n) {
+            numsCnt += (next - curr); // nums in this cur level
+
+            // move to the next level deeper down
+            curr *= 10;
+            next *= 10;
+
+            next = min(next, (n + 1) * 1LL);
+        }
+
+        return numsCnt;
+    }
+
+    int findKthNumber(int n, int k) {
+        int curr = 1;
+        k--; // considered 1 as root;
+
+        while(k > 0) {
+            int count = countNums(curr, curr + 1, n);
+
+            if(count <= k) {
+                k -= count; // considered the cur nodes of that level under cur number tree
+                curr++; // move to next
+            }
+            else {
+                k--; // consider this cur only as root
+                curr *= 10; // go deeper
+            }
+        } 
+
+        return curr;
+    }
+};
