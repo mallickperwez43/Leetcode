@@ -1,0 +1,46 @@
+// BRUTE FORCE
+
+class Solution {
+public:
+    int maximumDifference(vector<int>& nums) {
+        int n = nums.size();
+        
+        int result = INT_MIN;
+        
+        for(int i = 0; i < n - 1; i++) {
+            for(int j = i + 1; j < n; j++) {
+                if(nums[j] <= nums[i]) 
+                    continue;
+                
+                result = max(result, nums[j] - nums[i]);
+            }
+        }
+
+        return result == INT_MIN ? -1 : result;
+    }
+};
+
+
+// OPTIMAL
+
+class Solution {
+public:
+    int maximumDifference(vector<int>& nums) {
+        int n = nums.size();
+        
+        int minEl = nums[0]; // i
+        
+        int maxDiff = -1;
+
+        for(int j = 1; j < n; j++) {
+            if(nums[j] > minEl) {
+                maxDiff = max(maxDiff, nums[j] - minEl);
+            }
+            else {
+                minEl = nums[j];
+            }
+        }
+
+        return maxDiff;
+    }
+};
