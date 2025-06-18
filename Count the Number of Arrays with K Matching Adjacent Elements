@@ -1,0 +1,51 @@
+int M = 1e9 + 7;
+class Solution {
+public:
+    long long findPower(long long a, long long b) {
+        long long result = 1;
+        
+        while(b) {
+            if(b & 1) 
+                result = (result * a) % M;
+            a = (a * a) % M;
+            b >>= 1; // b /= 2; 
+        }
+        
+        return result;
+    }
+
+    long long modularnCr(int n, int r, vector<long long>& fact, vector<long long>& fermatFact) { // O(1)
+        if(r > n)
+            return 0;
+        
+        long long result = fact[n];
+        result = (result * fermatFact[n - r]) % M;
+        result = (result * fermatFact[r]) % M;
+        return result;
+    }
+
+    int countGoodArrays(int n, int m, int k) {
+        // Precalculate factorial
+        vector<long long> fact(n + 1, 1);
+        for(int i = 1; i <= n; i++) { // O(n)
+            fact[i] = (fact[i - 1] * i) % M;
+        }
+
+        // Inverse factorial precalculate - Fermat's Little Theroem
+        vector<long long> fermatFact(n + 1, 1);
+        for(int i = 0; i <= n; i++) { // O(n)
+            fermatFact[i] = findPower(fact[i], M - 2); // log(mod - 2) -> O(1)
+        }
+
+        long long result = modularnCr(n - 1, k, fact, fermatFact);
+
+        result = (result * m) % M;
+
+        result = (result * findPower(m - 1, n - k - 1)) % M; // O(log(n - k - 1))
+
+        return (int)result;
+    }
+};
+
+// TC : O(n + n + log(n - k - 1))
+// SC : O(n + n)
