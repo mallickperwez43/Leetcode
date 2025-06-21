@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int maxDistance(string s, int k) {
+        int maxMD = 0;
+
+        int east  = 0;
+        int west  = 0;
+        int north = 0;
+        int south = 0;
+
+        for(int i = 0; i < s.length(); i++) {
+
+            if(s[i] == 'E') east++;
+            else if(s[i] == 'W') west++;
+            else if(s[i] == 'N') north++;
+            else  south++;
+            
+            int curMD = abs(east - west) + abs(north - south);
+
+            int steps = i + 1;
+
+            int wastedSteps = steps - curMD;
+
+            int extraSteps = 0;
+
+            if(wastedSteps != 0) {
+                extraSteps = min(2 * k, wastedSteps);
+            }
+
+            int finalCurMD = curMD + extraSteps;
+
+            maxMD = max(maxMD, finalCurMD);
+        }
+
+        return maxMD;
+    }
+};
