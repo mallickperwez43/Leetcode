@@ -1,0 +1,15 @@
+class Solution {
+public:
+    int possibleStringCount(string word) {
+        int n = word.length();
+        
+        int result = 1; // the given input string word is also a possible solution
+
+        for(int i = 1; i < n; i++) {
+            if(word[i - 1] == word[i]) 
+                result++;
+        }
+
+        return result;
+    }
+};
