@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int findLucky(vector<int>& arr) {
+        int maxEl = *max_element(arr.begin(), arr.end());
+
+        vector<int> count(maxEl + 1, 0);
+        for(int& num : arr) {
+            count[num]++;
+        }
+
+        int result = -1;
+
+        for(int i = maxEl; i > 0; i--) {
+            if(count[i] == i) {
+                result = i;
+                break;
+            }
+        }
+
+        return result;
+    }
+};
