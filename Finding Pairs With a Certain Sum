@@ -1,0 +1,37 @@
+class FindSumPairs {
+public:
+    vector<int> vec1;
+    vector<int> vec2;
+    unordered_map<int, int> mp;
+
+    FindSumPairs(vector<int>& nums1, vector<int>& nums2) { // O(m + n)
+        vec1 = nums1; // O(m)    
+        vec2 = nums2; // O(n)
+
+        for(int& x : vec2) { // O(n)
+            mp[x]++;
+        }    
+    }
+    
+    void add(int index, int val) { // O(1)
+        mp[vec2[index]]--;
+        vec2[index] += val;
+        mp[vec2[index]]++;
+    }
+    
+    int count(int tot) { // O(m)
+        int c = 0; // count
+        for(int& x : vec1) { // size of vec1 is 1000 only
+            c += mp[tot - x];
+        }
+
+        return c;
+    }
+};
+
+/**
+ * Your FindSumPairs object will be instantiated and called as such:
+ * FindSumPairs* obj = new FindSumPairs(nums1, nums2);
+ * obj->add(index,val);
+ * int param_2 = obj->count(tot);
+ */
