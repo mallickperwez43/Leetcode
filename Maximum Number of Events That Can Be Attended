@@ -1,0 +1,85 @@
+class Solution {
+public:
+    int maxEvents(vector<vector<int>>& events) {
+        int n = events.size();
+
+        sort(events.begin(), events.end()); // sort baed on starting day
+        
+        priority_queue<int, vector<int>, greater<int>> pq; // min heap to store earliest end day
+
+        int day = events[0][0];
+        int i   = 0;
+        int count = 0; // result number of events attended
+
+        while(!pq.empty() || i < n) {
+            while(i < n && events[i][0] == day) { // push all the events end day that starts at the cur day
+                pq.push(events[i][1]);
+                i++;
+            }
+            
+            if(!pq.empty()) {
+                pq.pop(); // 1 event attended of the cur day
+                count++; // counting that event
+            }
+
+            day++;
+
+            // skip those events whose endDay < day
+            while(!pq.empty() && pq.top() < day) {
+                pq.pop();
+            }
+        }
+
+        return count;
+    }
+};
+
+
+// slight improvement
+// take jump greedily to the next start day when heap is empty
+
+class Solution {
+public:
+    int maxEvents(vector<vector<int>>& events) {
+        int n = events.size();
+
+        sort(events.begin(), events.end()); // sort baed on starting day
+        
+        priority_queue<int, vector<int>, greater<int>> pq; // min heap to store earliest end day
+
+        int day = events[0][0];
+        int i   = 0;
+        int count = 0; // result number of events attended
+
+        while(!pq.empty() || i < n) {
+
+            if(pq.empty()) { // take jump greedily to the next start day when heap is empty
+                day = events[i][0];
+            }
+
+            while(i < n && events[i][0] == day) { // push all the events end day that starts at the cur day
+                pq.push(events[i][1]);
+                i++;
+            }
+            
+            if(!pq.empty()) {
+                pq.pop(); // 1 event attended of the cur day
+                count++; // counting that event
+            }
+
+            day++;
+
+            // skip those events whose endDay < day
+            while(!pq.empty() && pq.top() < day) {
+                pq.pop();
+            }
+        }
+
+        return count;
+    }
+};
+
+// nlogn -> sorting
+// n * logn -> n size and logn push/pop
+// TC : O(2*n*logn)
+// SC : O(n) 
