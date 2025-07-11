@@ -1,0 +1,145 @@
+// RECUSION + MEMOIZATION + LINEAR SEARCH
+// TLE
+class Solution {
+public:
+    
+    int solve(vector<vector<int>>& events, int idx, int k, int n, vector<vector<int>>& dp) {
+        // base case
+        if(idx >= n || k == 0)
+            return 0;
+        
+        if(dp[idx][k] != -1)
+            return dp[idx][k];
+        
+        int start = events[idx][0];
+        int end   = events[idx][1];
+        int value = events[idx][2];
+
+        int noTake = solve(events, idx + 1, k, n, dp);
+        
+        // linear search
+        int j = idx + 1; // next event's index whom i can choose to take if i take idx event
+        for(; j < n; j++) {
+            if(events[j][0] > end) 
+                break;
+        }
+
+        int take = value + solve(events, j, k - 1, n, dp);
+
+        return dp[idx][k] = max(take, noTake);
+    }
+
+    int maxValue(vector<vector<int>>& events, int k) {
+        int n = events.size();
+        
+        sort(events.begin(), events.end()); // sort based on starting time
+        
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, -1));
+
+        return solve(events, 0, k, n, dp);
+    }
+};
+
+
+// RECUSION + MEMOIZATION + BINARY SEARCH(STL)
+// TLE
+class Solution {
+public:
+    
+    int solve(vector<vector<int>>& events, int idx, int k, int n, vector<vector<int>>& dp) {
+        // base case
+        if(idx >= n || k == 0)
+            return 0;
+        
+        if(dp[idx][k] != -1)
+            return dp[idx][k];
+        
+        int start = events[idx][0];
+        int end   = events[idx][1];
+        int value = events[idx][2];
+
+        int noTake = solve(events, idx + 1, k, n, dp);
+        
+        // binary search
+        // next event's index whom i can choose to take if i take idx event
+        vector<int> temp = {end, INT_MAX, INT_MAX};
+        int next = upper_bound(events.begin() + idx + 1, events.end(), temp) - events.begin(); 
+        
+        int take = value + solve(events, next, k - 1, n, dp);
+
+        return dp[idx][k] = max(take, noTake);
+    }
+
+    int maxValue(vector<vector<int>>& events, int k) {
+        int n = events.size();
+        
+        sort(events.begin(), events.end()); // sort based on starting time
+        
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, -1));
+
+        return solve(events, 0, k, n, dp);
+    }
+};
+
+
+// RECUSION + MEMOIZATION + BINARY SEARCH
+
+class Solution {
+public:
+    
+    int getNextIndex(vector<vector<int>>& events, int start, int curEventEnd, int n) {
+        int low = start;
+        int high = n - 1;
+
+        int next = n;
+
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if(events[mid][0] > curEventEnd) {
+                next = mid;
+                high = mid - 1;
+            }
+            else 
+                low = mid + 1;
+        }
+
+        return next;
+    }
+
+    int solve(vector<vector<int>>& events, int idx, int k, int n, vector<vector<int>>& dp) {
+        // base case
+        if(idx >= n || k == 0)
+            return 0;
+        
+        if(dp[idx][k] != -1)
+            return dp[idx][k];
+        
+        int start = events[idx][0];
+        int end   = events[idx][1];
+        int value = events[idx][2];
+
+        int noTake = solve(events, idx + 1, k, n, dp);
+        
+        // binary search
+        // next event's index whom i can choose to take if i take idx event
+        int next = getNextIndex(events, idx + 1, end, n); 
+        
+        int take = value + solve(events, next, k - 1, n, dp);
+
+        return dp[idx][k] = max(take, noTake);
+    }
+
+    int maxValue(vector<vector<int>>& events, int k) {
+        int n = events.size();
+        
+        // sort based on starting time
+        sort(events.begin(), events.end(), [&](auto& a, auto& b) {
+            return a[0] < b[0];
+        }); 
+        
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, -1));
+
+        return solve(events, 0, k, n, dp);
+    }
+};
