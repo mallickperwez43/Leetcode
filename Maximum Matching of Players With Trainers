@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int matchPlayersAndTrainers(vector<int>& players, vector<int>& trainers) {
+        int m = players.size();
+        int n = trainers.size();
+
+        sort(players.begin(), players.end());
+        sort(trainers.begin(), trainers.end());
+         
+        int count = 0;
+
+        int i = 0; // players
+        int j = 0; // trainers
+
+        while(i < m && j < n) {
+            if(players[i] <= trainers[j]) {
+                count++; // found a trainer for the player
+                i++;
+                j++;
+            }
+            else
+                j++; // greedily because if cur trainer cant train this player then he can train anyone further
+        }
+
+        return count;
+    }
+};
+
+// simpler way
+
+class Solution {
+public:
+    int matchPlayersAndTrainers(vector<int>& players, vector<int>& trainers) {
+        int m = players.size();
+        int n = trainers.size();
+
+        sort(players.begin(), players.end());
+        sort(trainers.begin(), trainers.end());
+         
+        int count = 0;
+
+        int i = 0; // players
+        int j = 0; // trainers
+
+        while(i < m && j < n) {
+            if(players[i] <= trainers[j]) {
+                count++; // found a trainer for the player
+                i++;
+            }
+            j++;
+        }
+
+        return count;
+    }
+};
