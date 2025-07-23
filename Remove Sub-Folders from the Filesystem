@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<string> removeSubfolders(vector<string>& folder) {
+        unordered_set<string> st(folder.begin(), folder.end());
+        vector<string> result;
+
+        for(string& curFolder : folder){
+            bool isSubFolder = false;
+            string tempFolder = curFolder;
+            while(!tempFolder.empty()){
+                size_t position = tempFolder.find_last_of('/');
+
+                tempFolder = tempFolder.substr(0, position);
+
+                if(st.find(tempFolder) != st.end()){
+                    // it means curFolder is a subFolder
+                    isSubFolder = true;
+                    break;
+                }
+            }
+            
+            if(!isSubFolder){
+                result.push_back(curFolder);
+            }
+        }
+
+        return result;
+    }
+};
+
+
+class Solution {
+public:
+    vector<string> removeSubfolders(vector<string>& folder) {
+        sort(folder.begin(), folder.end()); 
+        vector<string> result;
+
+        result.push_back(folder[0]); // sorted hai isliye folder[0] ka koi parent nhi hoga
+        // so it can never be a sub folder 
+
+        for(int i = 1; i < folder.size(); i++){
+
+            string curFolder = folder[i];
+            string lastFolder = result.back();
+            lastFolder += '/';
+
+            // if(curFolder.find(lastFolder) == 0){
+            //     // it is a subfolder because its starting from lastfolder
+            // }
+            if(curFolder.find(lastFolder) != 0){
+                result.push_back(curFolder);
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(nlogn + n*l)
+// SC : O(1)
