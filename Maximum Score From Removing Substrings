@@ -1,0 +1,35 @@
+// Two Pointer
+class Solution {
+public:
+    int pointsForString(string& s, string neededString, int points){
+        int totalPoints = 0, n = s.length(), writeIndex = 0;
+          
+        for(int readIndex = 0; readIndex < n; readIndex++){
+            s[writeIndex++] = s[readIndex];
+
+            if(writeIndex > 1 and s[writeIndex - 1] == neededString[1] and s[writeIndex - 2] == neededString[0]){
+                writeIndex -= 2;
+                totalPoints += points;
+            }
+        }
+        s = s.substr(0, writeIndex);
+        return totalPoints;
+    }
+    int maximumGain(string s, int x, int y) {
+        string s1 = "ab", s2 = "ba";
+
+        // go  for higher priority first
+        if(x < y){
+            swap(s1, s2);
+            swap(x, y);
+        }
+
+        int higherPriorityAns = pointsForString(s, s1, x);
+        int lowerPriorityAns = pointsForString(s, s2, y);
+
+        return higherPriorityAns + lowerPriorityAns;
+    }
+};
+
+// TC : O(2n) * 2 ~ O(n)
+// SC : O(n) * 2 ~ O(n)
