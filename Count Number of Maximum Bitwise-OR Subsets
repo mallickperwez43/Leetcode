@@ -1,0 +1,72 @@
+// Recursion 
+
+class Solution {
+public:
+    
+    int countSubsets(int idx, int curOr, int maxOr, vector<int>& nums, int n) {
+        // base case
+        if(idx == n) {
+            if(curOr == maxOr) 
+                return 1; // found a subset
+            
+            return 0;
+        }
+
+        // taking nums[i] as a part of subset
+        int take = countSubsets(idx + 1, curOr | nums[idx], maxOr, nums, n);
+        
+        // not taking nums[i] as a part of subset
+        int noTake = countSubsets(idx + 1, curOr, maxOr, nums, n);
+
+        return take + noTake;
+    }
+
+    int countMaxOrSubsets(vector<int>& nums) {
+        int maxOr = 0;
+        for(int& num : nums) {
+            maxOr |= num;
+        }
+
+        int curOr = 0;
+        return countSubsets(0, curOr, maxOr, nums, nums.size());
+    }
+};
+
+
+// Recursion + Memoization
+
+class Solution {
+public:
+    
+    int countSubsets(int idx, int curOr, int maxOr, vector<int>& nums, int n, vector<vector<int>>& dp) {
+        // base case
+        if(idx == n) {
+            if(curOr == maxOr) 
+                return 1; // found a subset
+            
+            return 0;
+        }
+
+        if(dp[idx][curOr] != -1)
+            return dp[idx][curOr];
+
+        // taking nums[i] as a part of subset
+        int take = countSubsets(idx + 1, curOr | nums[idx], maxOr, nums, n, dp);
+        
+        // not taking nums[i] as a part of subset
+        int noTake = countSubsets(idx + 1, curOr, maxOr, nums, n, dp);
+
+        return dp[idx][curOr] = take + noTake;
+    }
+
+    int countMaxOrSubsets(vector<int>& nums) {
+        int maxOr = 0;
+        for(int& num : nums) {
+            maxOr |= num;
+        }
+        
+        int curOr = 0;
+        vector<vector<int>> dp(nums.size() + 1, vector<int>(maxOr + 1, -1));
+        return countSubsets(0, curOr, maxOr, nums, nums.size(), dp);
+    }
+};
