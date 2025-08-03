@@ -18,9 +18,10 @@ public:
         vector<int> cur;
         for(int i = 3; i <= numRows; i++) {
             cur.resize(i);
-            cur[0] = 1;
-            cur[i - 1] = 1;
+            cur[0] = 1; // front is 1
+            cur[i - 1] = 1; // end is 1
 
+            // calculate in between
             for(int j = 1; j < i - 1; j++) {
                 cur[j] = (prev[j - 1] + prev[j]);
             }
