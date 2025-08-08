@@ -1,0 +1,35 @@
+class Solution {
+public:
+    
+    bool midTimePossible(long long givenTime, int totalTrips, vector<int>& times) {
+        long long tripsCount = 0;
+        
+        for(int& time : times) {
+            tripsCount += (givenTime / time);
+        }
+
+        return tripsCount >= totalTrips;
+    }
+
+    long long minimumTime(vector<int>& time, int totalTrips) {
+        int n = time.size();
+
+        long long result = 1;
+        long long l = 1;
+        long long r = (long long)*min_element(time.begin(), time.end()) * (long long)totalTrips;
+
+        while(l <= r) {
+            long long midTime = l + (r - l) / 2;
+
+            if(midTimePossible(midTime, totalTrips, time)) {
+                result = midTime;
+                r = midTime - 1;
+            }
+            else {
+                l = midTime + 1;
+            }
+        }
+
+        return result;
+    }
+};
