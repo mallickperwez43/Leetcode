@@ -1,0 +1,130 @@
+// RECURSION + MEMOIZATION
+
+class Solution {
+public:
+    
+    int child1Collect(int n, vector<vector<int>>& fruits) {
+        int count = 0;
+        for(int i = 0; i < n; i++) {
+            count += fruits[i][i];
+        }
+        
+        return count;
+    }
+
+    int child2Collect(int i, int j, int n, vector<vector<int>>& fruits, vector<vector<int>>& dp) {
+        // base case
+        if(i >= n || j < 0 || j >= n) {
+            return 0;
+        }
+
+        if(i == n - 1 && j == n - 1) {
+            return 0; // child1 took it first
+        }
+
+        if(i == j || i > j) { // ristrict movments only to upper diagonal
+            return 0;
+        }
+        
+        if(dp[i][j] != -1) {
+            return dp[i][j];
+        }
+
+        int bottomLeft  = fruits[i][j] + child2Collect(i + 1, j - 1, n, fruits, dp);
+        int bottomDown  = fruits[i][j] + child2Collect(i + 1, j, n, fruits, dp);
+        int bottomRight = fruits[i][j] + child2Collect(i + 1, j + 1, n, fruits, dp);
+
+        return dp[i][j] = max({bottomLeft, bottomDown, bottomRight});
+    }
+
+    int child3Collect(int i, int j, int n, vector<vector<int>>& fruits, vector<vector<int>>& dp) {
+        // base case
+        if(i >= n || j < 0 || j >= n) {
+            return 0;
+        }
+
+        if(i == n - 1 && j == n - 1) {
+            return 0; // child1 took it first
+        }
+
+        if(i == j || i < j) { // ristrict movments only to lower diagonal
+            return 0;
+        }
+        
+        if(dp[i][j] != -1) {
+            return dp[i][j];
+        }
+
+        int upRight     = fruits[i][j] + child3Collect(i - 1, j + 1, n, fruits, dp);
+        int right       = fruits[i][j] + child3Collect(i, j + 1, n, fruits, dp);
+        int bottomRight = fruits[i][j] + child3Collect(i + 1, j + 1, n, fruits, dp);
+
+        return dp[i][j] = max({upRight, right, bottomRight});
+    }
+
+    int maxCollectedFruits(vector<vector<int>>& fruits) {
+        int n = fruits.size();
+        
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, -1));
+
+        int c1 = child1Collect(n, fruits);
+
+        int c2 = child2Collect(0, n - 1, n, fruits, dp);
+
+        int c3 = child3Collect(n - 1, 0, n, fruits, dp);
+
+        return (c1 + c2 + c3);
+    }
+};
+
+
+// BOTTOM UP
+
+class Solution {
+public:
+    int maxCollectedFruits(vector<vector<int>>& fruits) {
+        int n = fruits.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        // dp[i][j] = max fruits collected till [i][j] from sources
+
+        // child1Collect - Diagonal elements
+        int result = 0;
+        for(int i = 0; i < n; i++) {
+            result += fruits[i][i];
+        }
+
+        // Before child2 and child2, nullify the cells which cant be visited by child2 and child3
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                if(i < j && i + j < n - 1) { // upper
+                    dp[i][j] = 0;
+                }
+                else if(i > j && i + j < n - 1) { // lower
+                    dp[i][j] = 0;
+                }
+                else { // can place
+                    dp[i][j] = fruits[i][j]; 
+                }
+            }
+        }
+        
+        // child2Collect - Upper diaogonal
+        for(int i = 1; i < n; i++) {
+            for(int j = i + 1; j < n; j++) {
+                dp[i][j] += max({dp[i - 1][j - 1], dp[i - 1][j], (j + 1 < n) ? dp[i - 1][j + 1] : 0});
+            }
+        }
+
+        // child3Collect - Lower diagonal
+        for(int j = 1; j < n; j++) {
+            for(int i = j + 1; i < n; i++) {
+                dp[i][j] += max({dp[i - 1][j - 1], dp[i][j - 1], (i + 1 < n) ? dp[i + 1][j - 1] : 0});
+            }
+        }
+        
+        result += dp[n - 2][n - 1]; // child2
+        result += dp[n - 1][n - 2]; // child3
+
+        return result;
+    }
+};
