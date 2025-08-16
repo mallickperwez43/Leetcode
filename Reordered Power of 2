@@ -1,0 +1,94 @@
+// APPROACH 1
+
+class Solution {
+public:
+    string getSortedStr(int n) {
+        string s = to_string(n); // O(d)
+        sort(s.begin(), s.end()); // O(dlogd)
+        return s;
+    }
+
+    bool reorderedPowerOf2(int n) {
+        string s = getSortedStr(n); // O(dlogd)
+
+        // check all 2 powers and see if it matches with s
+        // constraints -> 10 ^ 9 so 2 ^ 29 can cover
+        for(int power = 0; power < 30; power++) {
+            if(s == getSortedStr(1 << power)) {
+                return true;
+            }
+        }    
+
+        return false;
+    }
+};
+
+// TC : O(dlogd * 30)
+// SC : O(d)
+
+
+// APPROACH 2
+
+class Solution {
+public:
+    unordered_set<string> st;
+
+    void buildSet() {
+        // 2 ^ p from p = 0 to 29
+        // convert to string
+        // sort it
+        // store it in set
+        for(int power = 0; power < 30; power++) {
+            string s = to_string(1 << power); 
+            sort(s.begin(), s.end()); 
+            st.insert(s);
+        }
+    }
+
+    bool reorderedPowerOf2(int n) {
+        if(st.empty()){
+            buildSet();  // call only once
+        }
+
+        string s = to_string(n);
+        sort(s.begin(), s.end());
+
+        return st.count(s); 
+    }
+};
+
+// TC : O(dlogd * 30)
+// SC : O(d)
+
+
+// APPROACH 3
+
+class Solution {
+public:
+
+    vector<int> getVectorCountFormat(int n) {
+        vector<int> vec(10, 0);
+
+        while(n) {
+            vec[n % 10]++;
+            n /= 10;
+        }
+
+        return vec;
+    }
+
+    bool reorderedPowerOf2(int n) {
+        vector<int> input = getVectorCountFormat(n); // O(d)
+
+        for(int power = 0; power < 30; power++) {
+            if(input == getVectorCountFormat(1 << power)) { 
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+// TC : O(d * 30)
+// SC : O(1)
