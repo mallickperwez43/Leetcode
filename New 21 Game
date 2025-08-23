@@ -1,0 +1,53 @@
+// BRUTE FORCE - TLE
+
+class Solution {
+public:
+    double new21Game(int n, int k, int maxPts) {
+        vector<double> prob(n + 1, 0.0);
+        prob[0] = 1.0; // score 0 initially
+        // prob[i] = probability of getting score = i
+        
+        for(int i = 1; i <= n; i++) {
+
+            for(int card = 1; card <= maxPts; card++) {
+                
+                // Probability of a score card = 1 / maxPts
+                // remaining score = i - card
+                // probability of remaining  = prob[i - card]
+                if(i - card >= 0 && i - card < k)
+                    prob[i] += prob[i - card] / maxPts;  
+            }
+        }
+
+        // k to n tak  ki probability
+        return accumulate(prob.begin() + k, prob.end(), 0.0);
+    }
+};
+
+
+// OPTIMAL
+
+class Solution {
+public:
+    double new21Game(int n, int k, int maxPts) {
+        vector<double> prob(n + 1, 0.0);
+        prob[0] = 1.0; // score 0 initially
+        // prob[i] = probability of getting score = i
+
+        double curProbabilitySum = (k == 0) ? 0.0 : 1.0;
+        
+        for(int i = 1; i <= n; i++) {
+
+            prob[i] = curProbabilitySum / maxPts;
+
+            if(i < k) // add to the window/ prefix
+                curProbabilitySum += prob[i];
+            
+            if(i - maxPts >= 0 && i - maxPts < k) // remove / shift the window
+                curProbabilitySum -= prob[i - maxPts];
+        }
+
+        // k to n tak  ki probability
+        return accumulate(prob.begin() + k, prob.end(), 0.0);
+    }
+};
