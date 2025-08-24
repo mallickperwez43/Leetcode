@@ -1,0 +1,58 @@
+class Solution {
+public:
+    
+    double epsilon = 0.1; // any value 0.01 or 0.001 or anything smaller will work
+
+    bool solve(vector<double>& cards) {
+        // base case
+        if(cards.size() == 1) {
+            return abs(cards[0] - 24.0) <= epsilon;
+        }
+
+        // pick two possible cards
+        for(int i = 0; i < cards.size(); i++) {
+            for(int j = 0; j < cards.size(); j++) {
+                if(i == j) 
+                    continue;
+                
+                vector<double> temp; // storing the remaining unchosen cards 
+                for(int k = 0; k < cards.size(); k++) {
+                    if(k != i && k != j) {
+                        temp.push_back(cards[k]);
+                    }
+                }
+
+                double a = cards[i]; // first card
+                double b = cards[j]; // second card
+
+                vector<double> possibleValues = {a + b, a - b, b - a, a * b};
+                if(abs(b) > 0.0) {
+                    possibleValues.push_back(a / b);
+                }
+                if(abs(a) > 0.0) {
+                    possibleValues.push_back(b / a);
+                }
+
+                for(double& val : possibleValues) {
+                    temp.push_back(val); // DO
+
+                    if(solve(temp) == true) // EXPLORE
+                        return true;
+                    
+                    temp.pop_back(); // UNDO 
+                }
+            }
+        }
+
+        return false;
+    }
+
+    bool judgePoint24(vector<int>& cards) {
+        vector<double> nums;
+        for(int i = 0; i < cards.size(); i++) {
+            nums.push_back(1.0 * cards[i]);
+        }
+
+        return solve(nums);
+    }
+};
