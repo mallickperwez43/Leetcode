@@ -1,0 +1,25 @@
+class Solution {
+public:
+    string breakPalindrome(string palindrome) {
+        int n = palindrome.length();
+        if(n == 1)
+            return "";
+        
+        int i = 0;
+        bool replaced = false;
+        while( i < n / 2) {
+            char ch = palindrome[i];
+            if(ch != 'a') { // greedily replace it with 'a'
+                palindrome[i] = 'a';
+                replaced = true;
+                break;
+            }
+            i++;
+        }
+
+        if(!replaced) // all chars were 'a'
+            palindrome[n - 1] = 'b';
+        
+        return palindrome;
+    }
+};
