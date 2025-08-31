@@ -34,3 +34,49 @@ public:
         return result;
     }
 };
+
+
+// Using row + col to solve in O(1) space
+// [i + j] -> even, move up right (i--, j++)
+// [i + j] -> odd, move up down left (i++, j--)
+
+class Solution {
+public:
+    vector<int> findDiagonalOrder(vector<vector<int>>& mat) {
+        if(mat.empty() || mat[0].empty()) 
+            return {};
+        
+        int m = mat.size();
+        int n = mat[0].size();
+        
+        vector<int> result(m * n);
+
+        int total = m * n;
+        int curr = 0;
+        int row = 0;
+        int col = 0;
+         
+        while(row < m && col < n && curr < total) {
+            result[curr++] = mat[row][col];
+
+            if((row + col) & 1) {
+                if(row == m - 1) col++;
+                else if (col == 0) row++;
+                else {
+                    row++;
+                    col--;
+                }
+            }
+            else {
+                if(col == n - 1) row++;
+                else if(row == 0) col++;
+                else {
+                    row--;
+                    col++;
+                }
+            }
+        }
+
+        return result;
+    }
+};
