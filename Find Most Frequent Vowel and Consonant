@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int maxFreqSum(string s) {
+        int maxVow  = 0;
+        int maxCons = 0;
+
+        vector<int> count(26, 0);
+        // a  e  i  o  u 
+        // 0  4  8  14 20
+        
+        for(char& ch : s) {
+            int idx = ch - 'a';
+            count[idx]++;
+
+            if(idx == 0 || idx == 4 || idx == 8 || idx == 14 || idx == 20) {
+                maxVow = max(maxVow, count[idx]);
+            }
+            else {
+                maxCons = max(maxCons, count[idx]);
+            }
+        }
+
+        return maxVow + maxCons;
+    }
+};
