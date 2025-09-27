@@ -1,0 +1,52 @@
+class TaskManager {
+public:
+    
+    priority_queue<pair<int, int>> maxHeap; // priority -> taskId
+    unordered_map<int, int> taskPriority;   // taskId -> priority
+    unordered_map<int, int> taskUser;       // taskId -> userId
+
+    TaskManager(vector<vector<int>>& tasks) {
+        for(auto& task : tasks) {
+            add(task[0], task[1], task[2]);
+        }
+    }
+    
+    void add(int userId, int taskId, int priority) { // O(logn)
+        maxHeap.push({priority, taskId});
+        taskPriority[taskId] = priority;
+        taskUser[taskId] = userId;
+    }
+    
+    void edit(int taskId, int newPriority) { // O(logn)
+        maxHeap.push({newPriority, taskId});
+        taskPriority[taskId] = newPriority;
+    }
+    
+    void rmv(int taskId) { // O(1)
+        taskPriority[taskId] = -1;
+    }
+    
+    int execTop() { // O(n * logn)
+        while(!maxHeap.empty()) {
+            auto [prio, taskId] = maxHeap.top();
+            maxHeap.pop(); // (logn)
+            
+            // n stale entries
+            if(prio == taskPriority[taskId]) { // fresh (not stale)
+                taskPriority[taskId] = -1;
+                return taskUser[taskId];
+            }
+        }
+
+        return -1;
+    }
+};
+
+/**
+ * Your TaskManager object will be instantiated and called as such:
+ * TaskManager* obj = new TaskManager(tasks);
+ * obj->add(userId,taskId,priority);
+ * obj->edit(taskId,newPriority);
+ * obj->rmv(taskId);
+ * int param_4 = obj->execTop();
+ */
