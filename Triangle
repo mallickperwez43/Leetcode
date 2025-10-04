@@ -82,3 +82,26 @@ public:
 // SC : O(n)
 
 
+
+// Approach 4 : Bottom Up (Top Down)
+
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int n = triangle.size();
+
+        for(int row = 1; row < n; row++) {
+            for(int col = 0; col <= row; col++) {
+                int prev_row_up   = triangle[row - 1][min(col, (int)triangle[row - 1].size() - 1)];
+                int prev_row_left = triangle[row - 1][max(col - 1, 0)];
+
+                triangle[row][col] += min(prev_row_up, prev_row_left);
+            }
+        }
+
+        return *min_element(triangle[n - 1].begin(), triangle[n - 1].end()); 
+    }
+};
+
+// TC : O(n ^ 2)
+// SC : O(1) // modified input itself
