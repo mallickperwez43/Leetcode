@@ -1,0 +1,44 @@
+// Simulation
+
+class Solution {
+public:
+    int triangularSum(vector<int>& nums) {
+        
+        while(nums.size() > 1) {
+            vector<int> temp; // newNums
+
+            for(int i = 0; i < nums.size() - 1; i++) {
+                temp.push_back((nums[i] + nums[i + 1]) % 10);
+            }
+
+            nums = move(temp);
+        }
+
+        return nums[0];
+    }
+};
+
+// TC : O(n ^ 2)
+// SC : O(n)
+
+
+// In_Place
+
+class Solution {
+public:
+    int triangularSum(vector<int>& nums) {
+        
+        int n = nums.size();
+
+        for(int last_idx = n - 1; last_idx >= 1; last_idx--) {
+            for(int i = 0; i < last_idx; i++) {
+                nums[i] = ((nums[i] + nums[i + 1]) % 10);
+            }
+        }
+        
+        return nums[0];
+    }
+};
+
+// TC : O(n ^ 2)
+// SC : O(1)
