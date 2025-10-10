@@ -1,0 +1,58 @@
+// Approach 1 : Simulation
+
+class Solution {
+public:
+    int numWaterBottles(int numBottles, int numExchange) {
+        int consumed = 0;
+
+        while(numBottles >= numExchange) {
+            consumed += numExchange;
+            numBottles -= numExchange;
+
+            numBottles += 1;
+        }
+
+        return consumed + numBottles;
+    }
+};
+
+// TC: O(numBottles)
+// SC : O(1)
+
+
+// Approach 2 : Simulation + Maths
+
+class Solution {
+public:
+    int numWaterBottles(int numBottles, int numExchange) {
+        int consumed = numBottles;
+        int emptyBottles = numBottles;
+
+        while(emptyBottles >= numExchange) {
+            int extraFullBottles = emptyBottles / numExchange;
+
+            int remain = emptyBottles % numExchange;
+            
+            consumed += extraFullBottles;
+            
+            emptyBottles = remain + extraFullBottles;
+        }
+
+        return consumed;
+    }
+};
+
+// TC: O(log(numBottles))
+// SC : O(1)
+
+// Approach 3
+
+class Solution {
+public:
+    int numWaterBottles(int numBottles, int numExchange) {
+        return numBottles + (numBottles - 1) / (numExchange - 1);   
+    }
+};
+
+// TC : O(1)
+// SC : O(1)
