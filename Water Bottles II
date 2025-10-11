@@ -1,0 +1,33 @@
+// Simulation
+
+class Solution {
+public:
+    int maxBottlesDrunk(int numBottles, int numExchange) {
+        int consumed = numBottles;
+        int emptyBottles = numBottles;
+
+        while(emptyBottles >= numExchange) {
+            emptyBottles -= numExchange; // exchanged the bottle and got a full bottle
+            consumed++; // consumed that full bottle
+            numExchange++; // increase the value of exchange rate of bottle
+            emptyBottles++;  // since i drank the bottle its empty now
+        }
+
+        return consumed;
+    }
+};
+
+
+// Math
+
+// Approach 2
+
+class Solution {
+public:
+    int maxBottlesDrunk(int numBottles, int numExchange) {
+        int n = numBottles;
+        int N = numExchange;
+
+        return n + ((-2 * N + 3 + sqrt(4 * N * N - 12 * N + 8 * n + 1)) / 2);
+    }
+};
