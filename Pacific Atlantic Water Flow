@@ -1,0 +1,127 @@
+// DFS
+
+class Solution {
+public:
+    
+    vector<vector<int>> directions = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};
+
+    void dfs(int i, int j, int prevCellVal, int m, int n, vector<vector<int>>& heights, vector<vector<bool>>& vis) {
+        
+        if(i < 0 || i >= m || j < 0 || j >= n || heights[i][j] < prevCellVal || vis[i][j])
+            return;
+        
+
+        vis[i][j] = true;
+        
+        for(auto& dir : directions) {
+            int i_ = i + dir[0];
+            int j_ = j + dir[1];
+
+            dfs(i_, j_, heights[i][j], m, n, heights, vis);       
+        }
+    }
+
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+        int m = heights.size();
+        int n = heights[0].size();
+        
+        // pacific visited -> pv
+        vector<vector<bool>>pv(m, vector<bool>(n, false)); // pv[i][j] = true -> the water from this cell reached pacific ocean 
+        // atlantic visited -> av
+        vector<vector<bool>> av(m, vector<bool>(n, false)); // av[i][j] = true -> the water from this cell reached atlantic ocean
+        
+        // vertically
+        for(int row = 0; row < m; row++) {
+            dfs(row, 0, INT_MIN, m, n, heights, pv);
+            dfs(row, n - 1, INT_MIN, m, n, heights, av);
+        } 
+
+        // horizontally
+        for(int col = 0; col < n; col++) {
+            dfs(0, col, INT_MIN, m, n, heights, pv);
+            dfs(m - 1, col, INT_MIN, m, n, heights, av);
+        }
+
+        vector<vector<int>> result;
+
+        // only both visited cell is answer
+        for(int row = 0; row < m; row++) {
+            for(int col = 0; col < n; col++) {
+                if(pv[row][col] && av[row][col]) {
+                    result.push_back({row, col});
+                }
+            }
+        }
+
+        return result;
+    }
+};
+
+
+// BFS
+
+class Solution {
+public:
+    
+    vector<vector<int>> directions = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};
+
+    void bfs(int row, int col, int m, int n, vector<vector<int>>& heights, vector<vector<bool>>& vis) {
+        queue<pair<int, int>> que;
+        que.push(make_pair(row, col));
+        vis[row][col] = true;
+        
+        auto isInside = [&](int i, int j) {
+            return (i >= 0 && i < m && j >= 0 && j < n);
+        };
+
+        while(!que.empty()) {
+            auto [i, j] = que.front();
+            que.pop();
+
+            for(auto& dir : directions) {
+                int i_ = i + dir[0];
+                int j_ = j + dir[1];
+                
+                if(isInside(i_, j_) && !vis[i_][j_] && heights[i_][j_] >= heights[i][j]) {
+                    vis[i_][j_] = true;
+                    que.push(make_pair(i_, j_));
+                }
+            }
+        }
+    }
+
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+        int m = heights.size();
+        int n = heights[0].size();
+        
+        // pacific visited -> pv
+        vector<vector<bool>>pv(m, vector<bool>(n, false)); // pv[i][j] = true -> the water from this cell reached pacific ocean 
+        // atlantic visited -> av
+        vector<vector<bool>> av(m, vector<bool>(n, false)); // av[i][j] = true -> the water from this cell reached atlantic ocean
+        
+        // vertically
+        for(int row = 0; row < m; row++) {
+            bfs(row, 0, m, n, heights, pv);
+            bfs(row, n - 1, m, n, heights, av);
+        } 
+
+        // horizontally
+        for(int col = 0; col < n; col++) {
+            bfs(0, col, m, n, heights, pv);
+            bfs(m - 1, col, m, n, heights, av);
+        }
+
+        vector<vector<int>> result;
+
+        // only both visited cell is answer
+        for(int row = 0; row < m; row++) {
+            for(int col = 0; col < n; col++) {
+                if(pv[row][col] && av[row][col]) {
+                    result.push_back({row, col});
+                }
+            }
+        }
+
+        return result;
+    }
+};
