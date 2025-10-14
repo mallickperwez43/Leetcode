@@ -1,0 +1,111 @@
+// Binary Search on answers + BFS / DFS
+
+class Solution {
+public:
+    vector<vector<int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    int n;
+
+    bool isPossibleToReach(int i, int j, int n, int time, vector<vector<int>>& grid, vector<vector<bool>>& visited) {
+        if(i < 0 || i >= n || j < 0 || j >= n || grid[i][j] > time || visited[i][j]) {
+            return false;
+        } 
+
+        visited[i][j] = true;
+
+        if(i == n - 1 && j == n - 1) {
+            return true;
+        }
+
+        for(auto& dir : directions) {
+            int i_ = i + dir[0];
+            int j_ = j + dir[1];
+
+            if(isPossibleToReach(i_, j_, n, time, grid, visited)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+    int swimInWater(vector<vector<int>>& grid) {
+        n = grid.size();
+
+        int l = grid[0][0];
+        int r = n * n - 1;
+
+        int result = 0;
+
+        while(l <= r) { // O(log(n ^ 2))
+            int mid = l + (r - l) / 2;
+            
+            vector<vector<bool>> visited(n, vector<bool>(n, false));
+            if(isPossibleToReach(0, 0, n, mid, grid, visited)) { // BFS / DFS -> O(n ^ 2)
+                result = mid;
+                r = mid - 1;
+            }
+            else {
+                l = mid + 1;
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n^2 * log(n ^ 2))
+// SC : O(n ^ 2)
+
+
+// Dijkstra
+
+class Solution {
+public:
+    vector<vector<int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    typedef pair<int, pair<int, int>> P;
+
+    int swimInWater(vector<vector<int>>& grid) {
+        int n = grid.size();
+
+        vector<vector<int>> result(n, vector<int>(n, INT_MAX));
+
+        priority_queue<P, vector<P>, greater<P>> pq; // {time, {i, j}}
+        result[0][0] = grid[0][0]; // src
+        pq.push({grid[0][0], {0, 0}});
+
+        while(!pq.empty()) {
+            P top = pq.top();
+            pq.pop();
+
+            int curTime = top.first;
+            int i       = top.second.first;
+            int j       = top.second.second;
+
+            if(i == n - 1 && j == n - 1) {
+                return curTime; // minTime needed to reach [n - 1][n - 1]
+            }
+
+            if(curTime > result[i][j])
+                continue;
+            
+            for(auto& dir : directions) {
+                int i_ = i + dir[0];
+                int j_ = j + dir[1];
+                
+                if(i_ >= 0 && i_ < n && j_ >= 0 && j_ < n) {
+                    int nextTime = max(curTime, grid[i_][j_]);
+
+                    if(result[i_][j_] > nextTime) {
+                        result[i_][j_] = nextTime;
+                        pq.push({nextTime, {i_, j_}});
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+};
+
+// TC : O(n^2 * log(n ^ 2))
+// SC : O(n ^ 2)
