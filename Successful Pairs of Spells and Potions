@@ -1,0 +1,35 @@
+// STL -> lower_bound
+
+class Solution {
+public:
+    vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
+        int m = spells.size();
+        int n = potions.size();
+
+        sort(potions.begin(), potions.end());
+        
+        int maxPotion = potions[n - 1];
+
+        vector<int> result;
+
+        for(int& spell : spells) {
+            // minPotion * spell >= success 
+            long long minPotion = ceil((1.0 * success) / spell);
+                
+            if(minPotion > maxPotion) {
+                result.push_back(0);
+                continue;
+            }
+            
+            // index of potion >= minPotion
+            int index = lower_bound(potions.begin(), potions.end(), minPotion) - potions.begin();
+            int count = n - index;
+            result.push_back(count);
+        }
+
+        return result;
+    }
+};
+
+// TC: O(nlogn + mlogn)
+// SC: O(1)
