@@ -33,3 +33,61 @@ public:
 
 // TC: O(nlogn + mlogn)
 // SC: O(1)
+
+
+// Custom Lower bound
+
+class Solution {
+public:
+    
+    int customLowerBound(int n, long long target, vector<int>& potions) {
+        int low = 0;
+        int high = n - 1;
+        int result = n;
+
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if(potions[mid] >= target) {
+                result = mid;
+                high = mid - 1;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+
+        return result;
+    }
+
+    vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
+        int m = spells.size();
+        int n = potions.size();
+
+        sort(potions.begin(), potions.end());
+        
+        int maxPotion = potions[n - 1];
+
+        vector<int> result;
+
+        for(int& spell : spells) {
+            // minPotion * spell >= success 
+            long long minPotion = ceil((1.0 * success) / spell);
+                
+            if(minPotion > maxPotion) {
+                result.push_back(0);
+                continue;
+            }
+            
+            // index of potion >= minPotion
+            int index = customLowerBound(n, minPotion, potions);
+            int count = n - index;
+            result.push_back(count);
+        }
+
+        return result;
+    }
+};
+
+// TC: O(nlogn + mlogn)
+// SC: O(1)
