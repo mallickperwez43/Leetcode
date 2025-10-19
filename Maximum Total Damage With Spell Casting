@@ -1,0 +1,50 @@
+// Recursion + Memoization
+
+class Solution {
+public:
+    typedef long long ll;
+    
+    ll solve(int i, int n, vector<ll>& nums, unordered_map<ll, ll>& mp, vector<ll>& dp) {
+        // base case
+        if(i >= n) {
+            return 0;
+        }
+
+        if(dp[i] != -1) {
+            return dp[i];
+        }
+
+        // not_taken/skip
+        ll not_take = solve(i + 1, n, nums, mp, dp);
+
+        // take
+        // [i - 2, i - 1, i + 1, i + 2]
+        // just greater than equal is i + 3 -> lower_bound
+        int j = lower_bound(nums.begin() + i + 1, nums.end(), nums[i] + 3) - nums.begin(); 
+
+        ll take = nums[i] * mp[nums[i]] + solve(j, n, nums, mp, dp);
+
+        return dp[i] = max(take, not_take);
+    }
+
+    ll maximumTotalDamage(vector<int>& power) {
+        unordered_map<ll, ll> mp;
+        for(int& el : power) {
+            mp[el]++;
+        } 
+
+        vector<ll> nums; // storing only unique elements -> simplying (mp.size())
+        for(auto& it : mp) {
+            nums.push_back(it.first);
+        }
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        
+        vector<ll> dp(n + 1, -1);
+
+        return solve(0, n, nums, mp, dp);
+    }
+};
+
+// TC : O(n * logn)
+// SC : O(n)
