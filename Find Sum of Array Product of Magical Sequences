@@ -38,3 +38,93 @@ public:
         return (int)(solve(0, 0, nums, dp) % MOD);
     }
 };
+
+
+
+// Recursion + Memoization -> (Binary Exponentiation, Fermat Little Therom, Binary Addition (Carry Impact))
+
+class Solution {
+public:
+    typedef long long ll;
+    const int MOD = 1e9 + 7;
+    int N, K;
+    
+    vector<ll> fact;
+    vector<ll> invFact;
+    
+    ll findPower(ll a, ll b) {
+        if(b == 0)
+            return 1;
+        
+        ll half = findPower(a, b / 2);
+        ll result = (half * half) % MOD;
+
+        if(b & 1) {
+            result = (result * a) % MOD;
+        }
+
+        return result;
+    }
+    
+    // nCr % MOD (Modular nCr)
+    ll nCr(int n, int r) {
+        return (((fact[n] * invFact[r]) % MOD) * invFact[n - r]) % MOD;
+    }
+
+    ll solve(ll binarySum, int m, int k, int i, vector<int>& nums, map<tuple<ll, int, int, int>, ll>& dp) {
+        if(m == 0 && __builtin_popcountll(binarySum) == k) {
+            return 1;
+        }
+
+        if(m == 0 || i >= N) {
+            return 0;
+        }
+        
+        auto key = make_tuple(binarySum, m, k, i); 
+        if(dp.count(key)) {
+            return dp[key];
+        }
+
+        ll totalSum = 0;
+
+        // Skip index i
+        totalSum = (totalSum + solve((binarySum >> 1), m, k - (binarySum & 1), i + 1, nums, dp)) % MOD;
+        
+        // Take index i freq number of times
+        for(int freq = 1; freq <= m; freq++) {
+            ll newBinarySum = binarySum + freq; // ith bit ka sum
+
+            ll prod = solve((newBinarySum >> 1), m - freq, k - (newBinarySum & 1), i + 1, nums, dp);
+            
+            prod = (findPower(nums[i], freq) % MOD * prod % MOD) % MOD;
+            
+            prod = (prod * nCr(m, freq)) % MOD;
+
+            totalSum = (totalSum + prod) % MOD;
+        }
+
+        return dp[key] = totalSum;
+    }
+
+    int magicalSum(int m, int k, vector<int>& nums) {
+        N = nums.size();      
+        K = k;
+        
+        // precompute factorials and inverse factorials
+        fact.assign(m + 1, 1);
+        invFact.assign(m + 1, 1);
+
+        for(int i = 2; i <= m ; i++) {
+            fact[i] = (fact[i - 1] * i) % MOD;
+        }
+
+        // Fermat's Little Theorem for inverse factorials        
+        for(int i = 0; i <= m; i++) {
+            invFact[i] = findPower(fact[i], MOD - 2);
+        }
+
+        map<tuple<ll, int, int, int>, ll> dp; // {binarySum, m, k, i} -> value
+
+        return (int)(solve(0, m, k, 0, nums, dp) % MOD);
+    }
+};
