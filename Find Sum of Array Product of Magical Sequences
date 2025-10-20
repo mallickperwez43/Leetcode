@@ -1,0 +1,40 @@
+// Recursion + Memoization -> TLE
+
+class Solution {
+public:
+    typedef long long ll;
+    const int MOD = 1e9 + 7;
+    int N, M, K;
+    
+    ll solve(int count, ll sum, vector<int>& nums, unordered_map<string, int>& dp) {
+        if(count == M) {
+            return (__builtin_popcountll(sum) == K) ? 1 : 0;
+        }
+        
+        string key = to_string(count) + "_" + to_string(sum);
+        if(dp.count(key)) {
+            return dp[key];
+        }
+
+        ll totalSum = 0;
+        for(int i = 0; i < N; i++) {
+            ll newSum = sum + (1LL << i); // 2 ^ i
+
+            ll prod = (nums[i] * solve(count + 1, newSum, nums, dp)) % MOD;
+
+            totalSum = (totalSum + prod) % MOD;
+        }
+
+        return dp[key] = totalSum;
+    }
+
+    int magicalSum(int m, int k, vector<int>& nums) {
+        N = nums.size();    
+        M = m;    
+        K = k;
+        
+        unordered_map<string, int> dp; // string -> "count_sum"
+
+        return (int)(solve(0, 0, nums, dp) % MOD);
+    }
+};
