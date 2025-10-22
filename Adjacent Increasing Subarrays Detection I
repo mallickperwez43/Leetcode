@@ -29,3 +29,39 @@ public:
         return false;
     }
 };
+
+
+// Optimal
+
+class Solution {
+public:
+    bool hasIncreasingSubarrays(vector<int>& nums, int k) {
+        int n = nums.size();
+
+        int currRun = 1; // nums[0];
+        int prevRun = 0;
+
+        for(int i = 1; i < n; i++) {
+            if(nums[i] > nums[i - 1]) {
+                currRun++;
+            }
+            else { // increasing order has broken
+                prevRun = currRun;
+                currRun = 1;
+            }
+            
+            if(currRun  >= 2 * k) { // currRun can be taken as two increasing subarrays of len k
+                return true;
+            }
+
+            if(min(currRun, prevRun) >= k) {
+                return true;
+            }
+        } 
+
+        return false;
+    }
+};
+
+// TC: O(n)
+// SC: O(1)
