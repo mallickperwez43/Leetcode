@@ -52,3 +52,67 @@ public:
 
 // TC : O(2 ^ (N * 26))
 // SC : O(1)
+
+
+
+// Recursion + Memoization(Bit memoization)
+
+class Solution {
+public:
+    unordered_map<long long, int> dp;
+    string S;
+    int K;
+
+    int solve(long long i, long long uniqueChars, bool canChange) {
+        long long key = ((i << 27) | (uniqueChars << 1) | canChange);
+
+        // base case
+        if(i >= S.length()) {
+            return 0;
+        }
+
+        if(dp.find(key) != dp.end()) {
+            return dp[key];
+        }
+        
+        int charIndex = S[i] - 'a';
+        int newUniqueChars = uniqueChars | (1 << charIndex); // using it as integer instead of set
+        int uniqueCharCount = __builtin_popcount(newUniqueChars);
+
+        int result;
+        if(uniqueCharCount > K) { // cannot take curr char into partition
+            result = 1 + solve(i + 1, (1 << charIndex), canChange);
+        }
+        else { // take curr char in this partition
+            result = solve(i + 1, newUniqueChars, canChange);
+        }
+        
+        // we can change atmost 1 char
+        if(canChange) {
+            for(int newCharIndex = 0; newCharIndex < 26; newCharIndex++) {
+                int newCharSet = uniqueChars | (1 << newCharIndex);
+                int newUniqueCharCount = __builtin_popcount(newCharSet);
+
+                if(newUniqueCharCount > K) { 
+                    result = max(result, 1 + solve(i + 1, (1 << newCharIndex), false));
+                }
+                else { // take curr char in this partition
+                    result = max(result, solve(i + 1, newCharSet, false));
+                }
+            }
+        }
+
+        return dp[key] = result;
+    }
+
+    int maxPartitionsAfterOperations(string s, int k) {
+        S = s;
+        K = k;
+
+        // 00000.....00 -> 25 bits(uniqueChar)
+        return solve(0, 0, true) + 1; // considering last partition
+    }
+};
+
+// TC : O((2 ^ N)* 26)
+// SC : O(M + N) // M states and N recursion stack
