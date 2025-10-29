@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int maxFrequency(vector<int>& nums, int k, int numOperations) {
+        int maxEl = *max_element(nums.begin(), nums.end()) + k;
+
+        vector<int> freq(maxEl + 1, 0);
+        
+        for(int& num : nums) {
+            freq[num]++;
+        }
+
+        // cummulative sum of freq to get the range in O(1)
+        for(int i = 1; i <= maxEl; i++) {
+            freq[i] += freq[i - 1];
+        }
+
+        int result = 0;
+
+        for(int target = 0; target <= maxEl; target++) {
+            if(freq[target] == 0)
+                continue;
+            
+            int leftNum  = max(target - k, 0); // l
+            int rightNum = min(target + k, maxEl); // r
+
+            int totalCount = freq[rightNum] - (leftNum > 0 ? freq[leftNum - 1] : 0);
+
+            int targetCount = freq[target] - (target > 0 ? freq[target - 1] : 0);
+            
+            int needConversion = totalCount - targetCount;
+
+            int maxPossibleFreq = targetCount + min(numOperations, needConversion);
+
+            result = max(result, maxPossibleFreq);
+        }
+
+        return result;
+    }
+};
+
+// TC : O(maxEl)
+// SC : O(maxEl)
