@@ -1,0 +1,89 @@
+// Brute Force -> Simulation
+
+class Solution {
+public:
+    bool check(vector<int>& nums, int count, int i, int dir) {
+        int idx = i;
+        vector<int> temp = nums;
+
+        while(idx >= 0 && idx < nums.size() && count > 0) {
+            if(temp[idx] > 0) {
+                temp[idx]--;
+                dir *= -1;
+                if(temp[idx] == 0) {
+                    count--;
+                }
+            }
+            idx += dir;
+        }
+
+        return count == 0; // all must be zero
+    }
+
+    int countValidSelections(vector<int>& nums) {
+        int result = 0;
+        int n = nums.size();
+
+        int count = 0; // count of nums[i] > 0
+
+        for(int& num : nums) {
+            if(num != 0)
+                count++;
+        }
+
+        for(int i = 0; i < n; i++) {
+            if(nums[i] == 0) {
+                if(check(nums, count, i, -1)) {
+                    result++;
+                }
+                if(check(nums, count, i, 1)) {
+                    result++;
+                }
+            }
+        }
+        
+        return result;
+    }
+};
+
+// TC : O(n ^ 2)
+// SC : O(n)
+
+
+
+// Optimal
+
+class Solution {
+public:
+    int countValidSelections(vector<int>& nums) {
+        int n = nums.size();
+        
+        int result   = 0;
+        int currSum  = 0; // cummulative sum of left side
+        int totalSum = accumulate(nums.begin(), nums.end(), 0);
+
+        for(int i = 0; i < n; i++) {
+            currSum += nums[i]; // leftSum
+
+            int leftSum = currSum;
+            int rightSum = totalSum - leftSum;
+
+            if(nums[i] != 0) {
+                continue;
+            }
+
+            if(leftSum == rightSum) {
+                result += 2;
+            }
+
+            if(abs(leftSum - rightSum) == 1) {
+                result += 1;
+            }
+        }
+        
+        return result;
+    }
+};
+
+// TC : O(n)
+// SC : O(1)
