@@ -32,3 +32,16 @@ public:
         return result;
     }
 };
+
+
+// Approach 3
+
+class Solution {
+public:
+    // 2 ^ k - 1 = all bits set
+    int smallestNumber(int n) {
+        int bits = log2(n) + 1; // no of bits
+
+        return (1 << bits) - 1;
+    }
+};
