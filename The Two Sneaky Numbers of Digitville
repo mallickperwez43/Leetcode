@@ -21,3 +21,52 @@ public:
 
 // TC : O(n)
 // SC : O(n)
+
+
+// Using Bit Manipulation (xor + mask)
+
+class Solution {
+public:
+    vector<int> getSneakyNumbers(vector<int>& nums) {
+        // 0 to n - 1
+        int n = nums.size() - 2;
+
+        int XOR = 0; // a ^ b
+        for(int& num : nums) { // nums
+            XOR ^= num;
+        } 
+        
+        for(int num = 0; num < n; num++) { // expected list
+            XOR ^= num;
+        }
+
+        int trailZeroCount = __builtin_ctz(XOR);
+        int mask = (1 << trailZeroCount);
+
+        int G1 = 0;
+        int G2 = 0;
+
+        for(int& num : nums) { // nums
+            if(num & mask) {
+                G1 ^= num;
+            }
+            else {
+                G2 ^= num;
+            }
+        }
+        
+        for(int num = 0; num < n; num++) { // expected list
+            if(num & mask) {
+                G1 ^= num;
+            }
+            else {
+                G2 ^= num;
+            }
+        }
+
+        return {G1, G2};
+    }
+};
+
+// TC : O(n)
+// SC : O(1)
