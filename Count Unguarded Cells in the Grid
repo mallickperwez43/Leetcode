@@ -1,0 +1,59 @@
+class Solution {
+public:
+    vector<vector<int>> directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    
+    int countUnguarded(int m, int n, vector<vector<int>>& guards, vector<vector<int>>& walls) {
+        vector<vector<int>> grid(m, vector<int>(n, 0));
+        // 0 : empty
+        // 1 : guarded
+        // 2 : gaurd
+        // 3 : walls
+        
+        // mark gaurd and wall cells
+        for(auto& guard : guards) {
+            grid[guard[0]][guard[1]] = 2;
+        }
+        for(auto& wall : walls) { 
+            grid[wall[0]][wall[1]] = 3;
+        }
+        
+        // iterate over the guard matrix and mark guarded cells 
+        for(auto& guard : guards) {
+            int i = guard[0];
+            int j = guard[1];
+            
+            for(auto& dir : directions) {
+                int dir_i = dir[0];
+                int dir_j = dir[1];
+
+                int i_ = i + dir_i;
+                int j_ = j + dir_j;
+
+                while(i_ >= 0 && i_ < m && j_ >= 0 && j_ < n) {
+                    if(grid[i_][j_] == 2 || grid[i_][j_] == 3) { // gaurd or a wall
+                        break;
+                    }
+
+                    if(grid[i_][j_] == 0) { // mark guarded
+                        grid[i_][j_] = 1;
+                    }
+
+                    i_ += dir_i;
+                    j_ += dir_j;
+                }
+            }
+        }
+
+        // iterate over grid again and check for unguarded
+        int count = 0;
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(grid[i][j] == 0) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+};
