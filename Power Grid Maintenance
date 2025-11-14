@@ -1,0 +1,66 @@
+// using dfs + map + id vector
+
+class Solution {
+public:
+    // O(c + n)
+    void dfs(int node, unordered_map<int, vector<int>>& adj, int& id, vector<bool>& visited, vector<int>& nodeCompId, unordered_map<int, set<int>>& mp) {
+        visited[node] = true;
+        nodeCompId[node] = id;
+        mp[id].insert(node);
+
+        for(auto& ngbr : adj[node]) {
+            if(!visited[ngbr]) {
+                dfs(ngbr, adj, id, visited, nodeCompId, mp);
+            }
+        }
+    }
+
+    vector<int> processQueries(int c, vector<vector<int>>& connections, vector<vector<int>>& queries) {
+        unordered_map<int, vector<int>> adj;
+        for(auto& edge : connections) {
+            int u = edge[0];
+            int v = edge[1];
+
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        vector<bool> visited(c + 1, false);
+        vector<int> nodeCompId(c + 1);
+        unordered_map<int, set<int>> mp; // compId -> {nodes in the comp in ordered fashion}
+
+        for(int node = 1; node <= c; node++) { // O(c + n)
+            if(!visited[node]) {
+                int compId = node;
+                dfs(node, adj, compId, visited, nodeCompId, mp);
+            }
+        }
+
+        vector<int> result;
+        for(auto& query : queries) { // O(q * log(c))
+            int type = query[0]; // 1 or 2
+            int node = query[1]; // node or station
+            int id   = nodeCompId[node];
+
+            if(type == 1) { // maintainence check
+                if(mp[id].count(node)) { // node itself is online
+                    result.push_back(node);
+                }
+                else if(!mp[id].empty()) { // node offline, return smallest node in same comp
+                    result.push_back(*mp[id].begin());
+                }
+                else { // no nodes left online in comp 
+                    result.push_back(-1);
+                }
+            }
+            else { // make node offline
+                mp[id].erase(node); // log(c)
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(c + n + q*logc)
+// SC : O(c + n)
