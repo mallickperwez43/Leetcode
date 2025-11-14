@@ -62,5 +62,91 @@ public:
     }
 };
 
+
+// using DSU + map + id vector
+
+class Solution {
+public:
+    vector<int> parent;
+    vector<int> rank;
+
+    int Find(int x) {
+        if(x == parent[x])
+            return x;
+        
+        return parent[x] = Find(parent[x]);
+    }
+
+    void Union(int x, int y) {
+        int x_par = Find(x);
+        int y_par = Find(y);
+
+        if(x_par == y_par)
+            return;
+        
+        if(rank[x_par] > rank[y_par]) {
+            parent[y_par] = x_par;
+            rank[x_par]++;
+        } else if(rank[x_par] < rank[y_par]) {
+            parent[x_par] = y_par;
+            rank[y_par]++;
+        }
+        else {
+            parent[y_par] = x_par;
+            rank[x_par]++;
+        }
+    }
+
+    vector<int> processQueries(int c, vector<vector<int>>& connections, vector<vector<int>>& queries) {
+        int n = connections.size();
+
+        parent.resize(c + 1);
+        rank.resize(c + 1);
+        for(int node = 1; node <= c; node++) {
+            parent[node] = node;
+            rank[node] = 0;
+        }
+
+        for(auto& edge : connections) {
+            int u = edge[0];
+            int v = edge[1];
+
+            Union(u, v);
+        }
+
+        vector<int> nodeCompId(c + 1);
+        unordered_map<int, set<int>> mp; // compId -> {nodes in the comp in ordered fashion}
+
+        for(int node = 1; node <= c; node++) { 
+            int parNode = Find(node);
+            nodeCompId[node] = parNode;
+            mp[parNode].insert(node);
+        }
+
+        vector<int> result;
+        for(auto& query : queries) { // O(q * log(c))
+            int type = query[0]; // 1 or 2
+            int node = query[1]; // node or station
+            int id   = nodeCompId[node];
+
+            if(type == 1) { // maintainence check
+                if(mp[id].count(node)) { // node itself is online
+                    result.push_back(node);
+                }
+                else if(!mp[id].empty()) { // node offline, return smallest node in same comp
+                    result.push_back(*mp[id].begin());
+                }
+                else { // no nodes left online in comp 
+                    result.push_back(-1);
+                }
+            }
+            else { // make node offline
+                mp[id].erase(node); // log(c)
+            }
+        }
+
+        return result;
+    }
+};
 // TC : O(c + n + q*logc)
 // SC : O(c + n)
