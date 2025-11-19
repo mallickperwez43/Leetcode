@@ -1,0 +1,35 @@
+// Brute Force --> TLE
+
+class Solution {
+public:
+    int minOperations(vector<int>& nums) {
+        unordered_set<int> st(nums.begin(), nums.end()); // O(n) space
+
+        int n = nums.size();
+
+        int ops = 0;
+
+        for(int target : st) {
+            if(target == 0) 
+                continue;
+
+            bool flow = false;
+            for(int i = 0; i < n; i++) {
+                if(nums[i] == target) {
+                    if(!flow) {
+                        flow = true;
+                        ops++;
+                    }
+                }
+                else if(nums[i] < target) {
+                    flow = false;
+                }
+            }
+        }
+
+        return ops;
+    }
+};
+
+// TC : O(U * n)
+// SC : O(n)
