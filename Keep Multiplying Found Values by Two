@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int findFinalValue(vector<int>& nums, int original) {
+        vector<int> freqSet(1001, 0);
+
+        for(int& num : nums) {
+            freqSet[num]++;
+        }
+
+        int idx = original;
+        while(idx <= 1000) {
+            if(freqSet[idx]) {
+                original *= 2;
+                idx = original;
+            }
+            else 
+                break;
+        }
+
+        return original;
+    }
+};
