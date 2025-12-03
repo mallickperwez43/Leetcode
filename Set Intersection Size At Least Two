@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int intersectionSizeTwo(vector<vector<int>>& intervals) {
+        // Sort by end ascending, start descending
+        sort(intervals.begin(), intervals.end(), [&](auto a, auto b) {
+            if(a[1] == b[1]) {
+                return a[0] > b[0];
+            }
+
+            return a[1] < b[1];
+        });
+
+
+        int result     = 0;
+        int secondLast = -1;
+        int last       = -1;
+
+        for(auto& interval : intervals) {
+            int l = interval[0];
+            int r = interval[1];
+
+            if(secondLast >= l && last >= l) { // both points already covered
+                continue;
+            }
+
+            if(l > last) { // no overlap(both points not covered)
+                result += 2; 
+                secondLast = r - 1;
+                last = r;
+            }
+            else { // one point already covered
+                result += 1;
+                secondLast = last;
+                last = r;
+            }      
+        }
+
+        return result;
+    }
+};
+
+// TC : O(nlogn)
+// SC : O(1)
