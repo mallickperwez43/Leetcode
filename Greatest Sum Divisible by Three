@@ -85,3 +85,33 @@ public:
 
 // TC : O(n * 3)
 // SC : O(n * 3)
+
+
+// Approach 2 : Bottom Up
+
+class Solution {
+public:
+    int maxSumDivThree(vector<int>& nums) {
+        int n = nums.size();
+        vector<vector<int>> dp(n + 1, vector<int>(3, INT_MIN));
+        dp[n][0] = 0;
+
+        for(int i = n - 1; i >= 0; i--) {
+            for(int remain = 0; remain <= 2; remain++) {
+
+                int newRemain = (remain + nums[i]) % 3;
+
+                int take = (dp[i + 1][newRemain] == INT_MIN) ? INT_MIN : nums[i] + dp[i + 1][newRemain];
+
+                int no_take = dp[i + 1][remain];
+
+                dp[i][remain] = max(take, no_take);
+            }
+        }
+        
+        return dp[0][0];      
+    }
+};
+
+// TC : O(n * 3)
+// SC : O(n * 3)
