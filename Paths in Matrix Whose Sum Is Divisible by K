@@ -1,0 +1,36 @@
+// Recursion + Memoization
+
+class Solution {
+public:
+    int m, n;
+    const int M = 1e9 + 7;
+    int solve(int i, int j, int curRemainSum, int k, vector<vector<int>>& grid, vector<vector<vector<int>>>& dp) {
+        if(i >= m || j >= n) 
+            return 0;
+        
+        if(i == m - 1 && j == n - 1) {
+            return ((curRemainSum + grid[i][j]) % k == 0);
+        }
+
+        if(dp[i][j][curRemainSum] != -1) {
+            return dp[i][j][curRemainSum];
+        }
+        
+        int down  = solve(i + 1, j, (curRemainSum + grid[i][j]) % k, k, grid, dp);
+        int right = solve(i, j + 1, (curRemainSum + grid[i][j]) % k, k, grid, dp);
+
+        return dp[i][j][curRemainSum] = (down + right) % M;
+    }
+
+    int numberOfPaths(vector<vector<int>>& grid, int k) {
+        m = grid.size();
+        n = grid[0].size();
+        
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k, -1)));
+
+        return solve(0, 0, 0, k, grid, dp);
+    }
+};
+
+// TC : O(m * n * k)
+// SC : O(m * n * k)
