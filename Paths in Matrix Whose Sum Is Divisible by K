@@ -34,3 +34,47 @@ public:
 
 // TC : O(m * n * k)
 // SC : O(m * n * k)
+
+
+// Bottom Up
+
+class Solution {
+public:
+    const int M = 1e9 + 7;
+
+    int numberOfPaths(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k, 0)));
+        // dp[i][j][remain] = now of ways to reach cell (i, j) with reaminder = remain
+
+        // base case
+        for(int remain = 0; remain < k; remain++) {
+            dp[m - 1][n - 1][remain] = ((remain + grid[m - 1][n - 1]) % k == 0);
+        }
+        
+        for(int i = m - 1; i >= 0; i--) {
+            for(int j = n - 1; j >= 0; j--) {
+                for(int remain = 0; remain < k; remain++) {
+                    
+                    if(i == m - 1 && j == n - 1) {
+                        continue;
+                    }
+
+                    int R = (remain + grid[i][j]) % k;
+
+                    int down  = (i + 1 < m) ? dp[i + 1][j][R] : 0;
+                    int right = (j + 1 < n) ? dp[i][j + 1][R] : 0;
+
+                    dp[i][j][remain] = (down + right) % M;
+                }
+            }
+        }
+
+        return dp[0][0][0];
+    }
+};
+
+// TC : O(m * n * k)
+// SC : O(m * n * k)
