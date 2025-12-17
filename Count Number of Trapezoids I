@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int M = 1e9 + 7;
+    int countTrapezoids(vector<vector<int>>& points) {
+        unordered_map<int, int> mp; // y-axis -> kitne points
+        
+        for(auto& point : points) {
+            int y = point[1];
+            mp[y]++; 
+        }
+
+        long long result = 0; // count of trapezoids
+        
+        long long prevHorLines = 0; // count of prev seen horizontal lines
+        
+        for(auto& it : mp) {
+            long long count = it.second;
+
+            long long horizontalLines = count * (count - 1) / 2; // countC2
+
+            result = (result + (horizontalLines * prevHorLines)) % M;
+
+            prevHorLines = (prevHorLines + horizontalLines) % M;
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n)
+// SC : O(n)
