@@ -26,3 +26,18 @@ public:
 
 // TC : O(2n) ~ O(n)
 // SC : O(1)
+
+
+// One Pass
+
+class Solution {
+public:
+    int countPartitions(vector<int>& nums) {
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+
+        return ((sum & 1) ? 0 : nums.size() - 1);
+    }
+};
+
+// TC : O(n)
+// SC : O(1)
