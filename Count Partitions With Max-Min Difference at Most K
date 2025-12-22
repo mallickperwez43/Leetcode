@@ -1,0 +1,40 @@
+// Recursion + Memoization -> TLE
+
+class Solution {
+public:
+int M = 1e9 + 7;
+    int n;
+    typedef long long ll;
+
+    ll t[50000 + 1];
+
+    ll solve(int i, vector<int>& nums, int k) {
+        if (i >= n) // successfully formed partitions till end
+            return 1;
+
+        if (t[i] != -1)
+            return t[i];
+
+        ll count = 0;
+        int minEl = INT_MAX;
+        int maxEl = INT_MIN;
+
+        for (int j = i; j < n; ++j) {
+            minEl = min(minEl, nums[j]);
+            maxEl = max(maxEl, nums[j]);
+
+            if (maxEl - minEl > k)
+                break;
+
+            count = (count + solve(j + 1, nums, k)) % M;
+        }
+
+        return t[i] = count;
+    }
+
+    int countPartitions(vector<int>& nums, int k) {
+        n = nums.size();
+        memset(t, -1, sizeof(t));
+        return solve(0, nums, k);
+    }
+};
