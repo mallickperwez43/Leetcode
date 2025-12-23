@@ -1,0 +1,18 @@
+// Approach 1
+
+class Solution {
+public:
+    int countOdds(int low, int high) {
+        // if low is even make it odd
+        if((low & 1) == 0) {
+            low++;
+        } 
+        
+        // if high is even make it odd
+        if((high & 1) == 0) {
+            high--;
+        } 
+
+        return (high - low) / 2 + 1;
+    }
+};
