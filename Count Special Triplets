@@ -32,3 +32,36 @@ public:
 
 // TC : O(2n)
 // SC : O(2n)
+
+
+// One Pass
+
+class Solution {
+public:
+    
+    int M = 1e9 + 7;
+
+    int specialTriplets(vector<int>& nums) {
+        unordered_map<int, int> valid_i;
+        unordered_map<int, int> valid_j;
+
+        int result = 0;
+
+        for(int& num : nums) {
+            
+            if(num % 2 == 0) { // valid k -> we have triplet
+                result = (result + valid_j[num / 2]) % M;
+            }
+            
+            // valid_j or not
+            valid_j[num] = (valid_j[num] + valid_i[num * 2]) % M; 
+
+            valid_i[num]++;
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n)
+// SC : O(2n)
