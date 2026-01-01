@@ -1,0 +1,71 @@
+class Solution {
+public:
+    void applyMessageEvent(vector<string> event, vector<int>& mentionCount, vector<int>& offlineTime) {
+
+        int timeStamp = stoi(event[1]);
+
+        vector<string> ids;
+
+        stringstream ss(event[2]);
+        string token;
+        while(ss >> token) { // default token whitespace
+            ids.push_back(token);
+        }
+
+        // Process all IDs
+        for(string id : ids) {
+            if(id == "ALL") {
+                for(int i = 0; i < mentionCount.size(); i++) {
+                    mentionCount[i]++;
+                }
+            }
+            else if(id == "HERE") {
+                for(int i = 0; i < mentionCount.size(); i++) {
+                    if(offlineTime[i] == 0 || offlineTime[i] + 60 <= timeStamp) {
+                        mentionCount[i]++;
+                    }
+                }
+            }
+            else {
+                mentionCount[stoi(id.substr(2))]++; // fetch id value ie x from idx(id0, id1)
+            }
+        } 
+
+        return;
+    }
+
+    vector<int> countMentions(int numberOfUsers, vector<vector<string>>& events) {
+        vector<int> mentionCount(numberOfUsers);
+        vector<int> offlineTime(numberOfUsers);
+
+        sort(events.begin(), events.end(), [&](auto a, auto b) { // O(ElogE)
+            int t1 = stoi(a[1]);
+            int t2 = stoi(b[1]);
+
+            if(t1 == t2) {
+                return a[0][1] > b[0][1];
+                // comparing 'O' of OFFLINE with 'M' of 'MESSAGE'
+                // OFFLINE should come first
+            }
+
+            return t1 < t2;
+        });
+        
+        // O(E * N)
+        for(vector<string> event : events) { // O(E)
+            if(event[0] == "MESSAGE") {
+                applyMessageEvent(event, mentionCount, offlineTime); // O(n)
+            }
+            else if(event[0] == "OFFLINE") {
+                int timeStamp = stoi(event[1]);
+                int id = stoi(event[2]);
+                offlineTime[id] = timeStamp;
+            }
+        }
+
+        return mentionCount;
+    }
+};
+
+// TC : O(ElogE + E * n)
+// SC : O(N)
