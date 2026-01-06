@@ -1,0 +1,96 @@
+class Solution {
+public:
+    void DFS(
+        int u,
+        const vector<int>& present, 
+        const vector<int>& future,
+        unordered_map<int, vector<int>>& adj,
+        vector<vector<vector<int>>>& statesProfit,
+        int budget
+    ) {
+        vector<pair<vector<int>, vector<int>>> childrenStatesProfit;
+        // childrenStatesProfit
+        // first -> child profit if parent NOT bought
+        // second -> child profit if parent bought
+
+        // Process children first
+        for(int v : adj[u]) {
+            DFS(v, present, future, adj, statesProfit, budget);
+            childrenStatesProfit.push_back(make_pair(statesProfit[v][0], statesProfit[v][1]));
+        }
+
+        // parent bought = 0 or 1
+        for(int parentBought = 0; parentBought <= 1; parentBought++) {
+
+            int price = parentBought ? present[u] / 2 : present[u];
+            int profit = future[u] - price;
+
+            vector<int> bestProfitAtU(budget + 1, 0);
+
+            // CASE 1 : Parent did not buy node u
+            vector<int> childrenProfitIfUNotBought(budget + 1, 0);
+
+            for(const auto& child : childrenStatesProfit) { // for all child
+                vector<int> temp(budget + 1, 0);
+
+                for(int used = 0; used <= budget; used++) {
+                    for(int take = 0; take + used <= budget; take++) {
+                        temp[used + take] = max(temp[used + take], childrenProfitIfUNotBought[used] + child.first[take]);
+                    }
+                }
+                childrenProfitIfUNotBought = move(temp);
+            }
+
+            for(int b = 0; b <= budget; b++) { // update best value when considering case 1
+                bestProfitAtU[b] = max(bestProfitAtU[b], childrenProfitIfUNotBought[b]);
+            }
+
+            // CASE 2 : Parent did buy node u
+            if(price <= budget) {
+                vector<int> childrenProfitIfUBought(budget + 1, 0);
+
+                for(const auto& child : childrenStatesProfit) { // for all child
+                    vector<int> temp(budget + 1, 0);
+
+                    for(int used = 0; used <= budget; used++) {
+                        for(int take = 0; used + take <= budget; take++) {
+                            temp[used + take] = max(temp[used + take], childrenProfitIfUBought[used] + child.second[take]);
+                        }
+                    }
+                    childrenProfitIfUBought = move(temp);
+                }
+
+                for(int b = price; b <= budget; b++) { // update best value when considering case 2
+                     bestProfitAtU[b] = max(bestProfitAtU[b], profit + childrenProfitIfUBought[b - price]);
+                }
+            }
+
+            statesProfit[u][parentBought] = move(bestProfitAtU);    
+        }
+    }
+
+    int maxProfit(int n, vector<int>& present, vector<int>& future, vector<vector<int>>& hierarchy, int budget) {
+        unordered_map<int, vector<int>> adj;
+        for(auto& h : hierarchy) {
+            int u = h[0] - 1; // 0 based
+            int v = h[1] - 1; // 0 based
+            adj[u].push_back(v);
+        }
+        
+        vector<vector<vector<int>>> statesProfit(n, vector<vector<int>>(2, vector<int>(budget + 1, 0)));
+        // statesProfit[u][0][b] = profit at u when its parent had not bought stock
+        // statesProfit[u][1][b] = profit at u when its parent had bought stock
+
+        DFS(0, present, future, adj, statesProfit, budget);
+
+        // CEO has no parent so no one can buy it
+        int result = 0;
+        for(int b = 0; b <= budget; b++) {
+            result = max(result, statesProfit[0][0][b]);
+        }
+        return result;
+    }
+};
+
+// TC : O(n * budget ^ 2)
+// SC : O(n * 2 * budget)
