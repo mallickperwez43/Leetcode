@@ -49,3 +49,63 @@ public:
 
 // TC : O(n * k * 3) ~ O(n * k)
 // SC : O(n * k * 3) ~ O(n * k)
+
+
+// Bottom Up
+
+class Solution {
+public:
+    long long maximumProfit(vector<int>& prices, int K) {
+        int n = prices.size();
+
+        vector<vector<vector<long long >>> dp(n + 1, vector<vector<long long>>(K + 1, vector<long long>(3, INT_MIN)));
+
+        // Base Case
+        for(int k = 0; k <= K; k++) {
+            dp[n][k][0] = 0;
+            dp[n][k][1] = INT_MIN;
+            dp[n][k][2] = INT_MIN;
+        }
+
+        for(int i = n - 1; i >= 0; i--) {
+            for(int k = 0; k <= K; k++) {
+
+                dp[i][k][0] = dp[i + 1][k][0]; // dont take 
+
+                if(k > 0) {
+                    // CASE 0 : no transaction
+                    dp[i][k][0] = max(
+                        dp[i][k][0],
+                        max(
+                            (long long)-prices[i] + dp[i + 1][k][1], // buy
+                            (long long)prices[i] + dp[i + 1][k][2] // short sell 
+                        )
+                    );
+                }
+
+                // CASE 1 : holding long
+                dp[i][k][1] = dp[i + 1][k][1]; // hold
+                if(k > 0) {
+                    dp[i][k][1] = max(
+                        dp[i][k][1],
+                        (long long)prices[i] + dp[i + 1][k - 1][0] // sell
+                    );
+                }
+                
+                // CASE 2 : holding short
+                dp[i][k][2] = dp[i + 1][k][2]; // hold
+                if(k > 0) {
+                    dp[i][k][2] = max(
+                        dp[i][k][2],
+                        (long long)-prices[i] + dp[i + 1][k - 1][0] // buy back
+                    );
+                }
+            }
+        }
+
+        return dp[0][K][0];
+    }
+};
+
+// TC : O(n * k * 3) ~ O(n * k)
+// SC : O(n * k * 3) ~ O(n * k)
