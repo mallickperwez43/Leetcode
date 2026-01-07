@@ -1,0 +1,51 @@
+// Recursion + Memoization
+
+class Solution {
+public:
+    long long solve(int i, int k, int CASE, vector<int>& prices, vector<vector<vector<long long>>>& dp) {
+        if(i == prices.size()){
+            if(CASE == 0)
+                return 0;
+            return INT_MIN; // unfinished transaction
+        }
+
+        if(dp[i][k][CASE] != INT_MIN) {
+            return dp[i][k][CASE];
+        }
+
+        long long noTake = solve(i + 1, k, CASE, prices, dp);  // Do nothing today
+        
+        long long take = INT_MIN;
+
+        if(k > 0) { // Take action
+            if(CASE == 1) {
+                // Sell today (complete normal transaction)
+                take = prices[i] + solve(i + 1, k - 1, 0, prices, dp);
+            }
+            else if(CASE == 2) {
+                // Buy back today(complete short transaction)
+                take = -prices[i] + solve(i + 1, k - 1, 0, prices, dp);
+            }
+            else {
+                // CASE 0 : start a transaction
+                take = max(
+                    -prices[i] + solve(i + 1, k, 1, prices, dp), // buy(normal)
+                    prices[i] + solve(i + 1, k, 2, prices, dp) // short sell
+                );
+            }
+        }
+
+        return dp[i][k][CASE] = max(take, noTake);
+    }
+
+    long long maximumProfit(vector<int>& prices, int k) {
+        int n = prices.size();
+
+        vector<vector<vector<long long >>> dp(n + 1, vector<vector<long long>>(k + 1, vector<long long>(3, INT_MIN)));
+
+        return solve(0, k, 0, prices, dp);
+    }
+};
+
+// TC : O(n * k * 3) ~ O(n * k)
+// SC : O(n * k * 3) ~ O(n * k)
