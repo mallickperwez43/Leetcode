@@ -1,0 +1,66 @@
+class Solution {
+public:
+    bool magicGrid(int r, int c, vector<vector<int>>& grid) {
+        vector<bool> visited(10, false);
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                int gridVal = grid[r + i][c + j];
+                if(gridVal < 1 || gridVal > 9 || visited[gridVal]) {
+                    return false;
+                } 
+                else {
+                    visited[gridVal] = true;
+                }
+            }
+        }
+
+        // Check sum
+        int SUM = grid[r][c] + grid[r][c + 1] + grid[r][c + 2]; // global sum
+
+        // 1] Rows & cols
+        for(int i = 0; i < 3; i++) {
+            //row
+            if(grid[r + i][c] + grid[r + i][c + 1] + grid[r + i][c + 2] != SUM) {
+                return false;
+            }
+            
+            //col
+            if(grid[r][c + i] + grid[r + 1][c + i] + grid[r + 2][c + i] != SUM) {
+                return false;
+            }
+        }
+
+        // 2] diagonal & antidiagonal
+
+        // diagonal
+        if(grid[r][c] + grid[r + 1][c + 1] + grid[r + 2][c + 2] != SUM) {
+            return false;
+        }
+        
+        // anti-diagonal
+        if(grid[r][c + 2] + grid[r + 1][c + 1] + grid[r + 2][c] != SUM) {
+            return false;
+        }
+
+        return true;
+    }
+
+    int numMagicSquaresInside(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        int count = 0;
+        int maxRows = m - 3;
+        int maxCols = n - 3;
+
+        for(int i = 0; i <= maxRows; i++) {
+            for(int j = 0; j <= maxCols; j++) {
+                if(magicGrid(i, j, grid)) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+};
