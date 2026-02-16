@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int maximizeSquareHoleArea(int n, int m, vector<int>& hBars, vector<int>& vBars) {
+        //  1st step
+        sort(hBars.begin(), hBars.end());
+        sort(vBars.begin(), vBars.end());
+
+        int maxConsecutiveHBars = 1; // length of longest consecutive horizontal bars 
+        int maxConsecutiveVBars = 1; // length of longest consecutive vertical bars 
+
+        // HBar
+        int curConsecutiveHBars = 1;
+        for(int i = 1; i < hBars.size(); i++) {
+            if(hBars[i] - hBars[i - 1] == 1) {
+                curConsecutiveHBars++;
+            }
+            else {
+                curConsecutiveHBars = 1;
+            }
+            maxConsecutiveHBars = max(maxConsecutiveHBars, curConsecutiveHBars);
+        }
+        
+        // VBar
+        int curConsecutiveVBars = 1;
+        for(int i = 1; i < vBars.size(); i++) {
+            if(vBars[i] - vBars[i - 1] == 1) {
+                curConsecutiveVBars++;
+            }
+            else {
+                curConsecutiveVBars = 1;
+            }
+            maxConsecutiveVBars = max(maxConsecutiveVBars, curConsecutiveVBars);
+        }
+
+        int side = min(maxConsecutiveHBars, maxConsecutiveVBars) + 1;
+
+        return side * side;
+    }
+};
+
+// TC : O(mlogm + nlogn)
+// SC : O(1)
