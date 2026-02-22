@@ -51,3 +51,68 @@ public:
         return bestSide;
     }
 };
+
+
+// Approach 2 - Binary Search
+
+class Solution {
+public:
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        int rows = mat.size();    // m
+        int cols = mat[0].size(); // n
+
+        vector<vector<int>> prefix(rows, vector<int>(cols, 0));
+        // prefix[i][j] = sum of all elemenets in mat from (0, 0) to (i, j)
+
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                prefix[i][j] = (i > 0 ? prefix[i - 1][j] : 0) 
+                                + (j > 0 ? prefix[i][j - 1] : 0) 
+                                - ((i > 0 && j > 0) ? prefix[i - 1][j - 1] : 0) 
+                                + mat[i][j];
+            }
+        }
+
+        auto sumSquare = [&](int i, int j, int r2, int c2) {
+            int sum = prefix[r2][c2];
+            sum -= (i > 0 ? prefix[i - 1][c2] : 0);
+            sum -= (j > 0 ? prefix[r2][j - 1] : 0);
+            sum += ((i > 0 && j > 0) ? prefix[i - 1][j - 1] : 0);
+
+            return sum;
+        };
+
+        auto check = [&](int side) {
+            for(int i = 0; i + side - 1< rows; i++) {
+                for(int j = 0; j + side - 1 < cols; j++) {
+                    int r2 = i + side - 1;
+                    int c2 = j + side - 1;
+
+                    if(sumSquare(i, j, r2, c2) <= threshold) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };  
+
+        int low  = 1;
+        int high = min(rows, cols);
+        int bestSide = 0;
+
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if(check(mid) == true) {
+                bestSide = mid;
+                low = mid + 1;
+            }
+            else {
+                high = mid - 1;
+            }
+        }
+
+        return bestSide;
+    }
+};
