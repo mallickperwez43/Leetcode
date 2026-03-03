@@ -1,0 +1,60 @@
+// Memoization -> TLE
+
+class Solution {
+public:
+    int m, n;
+
+    int solve(int i, int j, int k, vector<vector<int>>& grid, vector<vector<vector<int>>>& dp) {
+        if(i == m || j == n || k < 0) {
+            return 1e9;
+        }
+
+        if(i == m - 1 && j == n - 1) {
+            return 0;
+        }
+        
+        if(dp[i][j][k] != -1) {
+            return dp[i][j][k];
+        }
+
+        // dowm
+        int down = 1e9;
+        if(i + 1 < m) {
+            down = grid[i + 1][j] + solve(i + 1, j, k, grid, dp);
+        }
+
+        // right
+        int right = 1e9;
+        if(j + 1 < n) {
+            right = grid[i][j + 1] + solve(i, j + 1, k, grid, dp);
+        }
+
+        // teleportation
+        int tele = 1e9;
+        for(int r = 0; r < m; r++) {
+            for(int c = 0; c < n; c++) {
+                if((r == i && c == j) || grid[r][c] > grid[i][j]) {
+                    continue;
+                }
+
+                tele = min(tele, solve(r, c, k - 1, grid, dp));
+            }
+        }
+
+        return dp[i][j][k] = min({down, right, tele});
+    }
+
+    int minCost(vector<vector<int>>& grid, int k) {
+        m = grid.size();
+        n = grid[0].size();
+        
+        vector<vector<vector<int>>> dp(m + 1, vector<vector<int>>(n + 1, vector<int>(k + 1, -1)));
+
+        return solve(0, 0, k, grid, dp);
+    }
+};
+
+// TC : O(m * n * k * (m * n))
+// SC : O(m * n * k)
+
+
