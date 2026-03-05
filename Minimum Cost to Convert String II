@@ -1,0 +1,108 @@
+class Solution {
+public:
+    typedef long long ll;
+    typedef pair<ll, string> P;
+    ll BIG_VALUE = 1e10;
+    unordered_map<string, vector<pair<string, ll>>> adj; // Graph
+    
+    // dijkstra
+    // start -> end -> answer
+    unordered_map<string, unordered_map<string, ll>> dijkstraDP;
+
+    vector<ll> dp;
+
+    string sourceStr;
+    string targetStr;
+
+    set<int> validLengths;
+
+    ll dijkstra(string& start, string& end) {
+
+        if(dijkstraDP[start].count(end)) {
+            return dijkstraDP[start][end];
+        }
+
+        // {cost, stringState}
+        priority_queue<P, vector<P>, greater<P>> pq;
+        // vector<int> result(n, INT_MAX)
+        unordered_map<string, ll> result; // source to string ka cost
+        result[start] = 0;
+        pq.push({0, start});
+
+        while(!pq.empty()) {
+            auto [currCost, node] = pq.top();
+            pq.pop();
+
+            if(node == end) {
+                break;
+            }
+
+            for(auto& edge : adj[node]) {
+                auto [adjNode, edgeCost] = edge;
+
+                if(!result[adjNode] || currCost + edgeCost < result[adjNode]) {
+                    result[adjNode] = currCost + edgeCost;
+                    pq.push({result[adjNode], adjNode});
+                }
+            }
+        }
+
+        ll finalCost = result.count(end) ? result[end] : BIG_VALUE;
+        return dijkstraDP[start][end] = finalCost; 
+    }
+
+    ll solve(int idx) {
+        if(idx >= sourceStr.length()) 
+            return 0;
+        
+        if(dp[idx] != -1)
+            return dp[idx];
+
+        ll minCost = BIG_VALUE;
+
+        if(sourceStr[idx] == targetStr[idx]) {
+            minCost = solve(idx + 1);
+        }
+
+        for(auto& len : validLengths) {
+            if(idx + len > sourceStr.length()) {
+                break;
+            }
+
+            string srcSub = sourceStr.substr(idx, len);
+            string tgtSub = targetStr.substr(idx, len);
+
+            if(!adj.count(srcSub)) {
+                continue;
+            }
+
+            ll minPathCost = dijkstra(srcSub, tgtSub);
+            if(minPathCost == BIG_VALUE) {
+                continue;
+            }
+
+            minCost = min(minCost, minPathCost + solve(idx + len));
+        }
+
+        return dp[idx] = minCost;
+    }
+
+    long long minimumCost(string source, string target, vector<string>& original, vector<string>& changed, vector<int>& cost) {
+        sourceStr = source;
+        targetStr = target;
+
+        dp.assign(10001, -1);
+
+        for(int i = 0; i < original.size(); i++) {
+            adj[original[i]].push_back({changed[i], cost[i]});
+        }    
+
+        for(auto& s : original) {
+            validLengths.insert(s.length());
+        }
+
+        ll result = solve(0);
+
+        return result == BIG_VALUE ? -1 : result;
+    }
+};
