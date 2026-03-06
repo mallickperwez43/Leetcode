@@ -25,3 +25,17 @@ public:
         return pos == -1 ? letters[0] : letters[pos];
     }
 };
+
+
+// STL upper bound
+
+class Solution {
+public:
+    char nextGreatestLetter(vector<char>& letters, char target) {
+        int n = letters.size();
+
+        int pos = upper_bound(letters.begin(), letters.end(), target) - letters.begin();
+
+        return pos == n ? letters[0] : letters[pos];
+    }
+};
