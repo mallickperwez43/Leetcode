@@ -1,0 +1,69 @@
+class Solution {
+public:
+    typedef long long ll;
+    typedef pair<ll, ll> P;
+
+    ll minimumCost(vector<int>& nums, int k, int dist) {
+        int n = nums.size();
+
+        set<P> kMinimum; // stores k - 1 minmum elements in a window
+        set<P> remaining; // store excess element which are a part of window
+
+        ll sum = 0; // stores sum of (k - 1) min elements
+
+        int i = 1;
+
+        while(i - dist < 1) { // O(n)
+            kMinimum.insert(make_pair(nums[i], i));
+            sum += nums[i];
+            if(kMinimum.size() > k - 1) {
+                P lastinKMin = *kMinimum.rbegin(); // last elememt in K minimum
+                sum -= lastinKMin.first;
+                remaining.insert(lastinKMin);
+                kMinimum.erase(lastinKMin);
+            } 
+            i++;
+        }
+
+        // reached here so I reached a valid window
+        ll result = LONG_MAX; // stores minimum sun of (k - 1) element among all the window
+        while(i < n) { // O(n * logk)
+            kMinimum.insert(make_pair(nums[i], i)); // O(logk)
+            sum += nums[i];
+
+            if(kMinimum.size() > k - 1) {
+                P lastinKMin = *kMinimum.rbegin(); // last elememt in K minimum
+                sum -= lastinKMin.first;
+                remaining.insert(lastinKMin);
+                kMinimum.erase(lastinKMin);
+            } 
+            
+            result = min(result, sum);
+
+            // shrinking window/[shifting]
+            // i-dist wala element
+            P removalEl = make_pair(nums[i - dist], i - dist);
+            if(kMinimum.count(removalEl)) {
+                sum -= removalEl.first;
+                kMinimum.erase(removalEl);
+
+                if(!remaining.empty()) {
+                    P firstMin = *remaining.begin(); // first element in remaining
+                    kMinimum.insert(firstMin);
+                    sum += firstMin.first;
+                    remaining.erase(firstMin);
+                }
+            }
+            else {
+                remaining.erase(removalEl);
+            }
+
+            i++;
+        }
+
+        return nums[0] + result;
+    }
+};
+
+// TC: O(n * logk)
+// SC : O(2k)
