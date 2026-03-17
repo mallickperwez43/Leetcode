@@ -43,3 +43,112 @@ public:
         return maxL;
     }
 };
+
+
+
+// OPTIMAL : Segment Tree Lazy Propogation
+
+class Solution {
+public:
+
+    vector<int> segTreeMin, segTreeMax, lazy;
+    int n;
+
+    void propogate(int i, int l, int r) {
+        if(lazy[i] != 0) {
+            segTreeMin[i] += lazy[i];
+            segTreeMax[i] += lazy[i];
+
+            if(l != r) { // lazy propogate
+                lazy[2 * i + 1] += lazy[i];
+                lazy[2 * i + 2] += lazy[i];
+            }
+
+            lazy[i] = 0;
+        }
+    }
+
+    void updateRange(int start, int end, int i, int l, int r, int val) {
+        propogate(i, l, r);
+
+        if(l > end || r < start) return;
+
+        // [start...end] fully inside this range [l...r]
+        if(l >= start && r <= end) {
+            lazy[i] += val;
+            propogate(i, l, r);
+            return;
+        }
+
+        // check for left, right child
+        int mid = l + (r - l) / 2;
+        updateRange(start, end, 2 * i + 1, l, mid, val);
+        updateRange(start, end, 2 * i + 2, mid + 1, r, val);
+
+        segTreeMin[i] = min(segTreeMin[2 * i + 1], segTreeMin[2 * i + 2]);
+        segTreeMax[i] = max(segTreeMax[2 * i + 1], segTreeMax[2 * i + 2]);
+    }
+
+    int findLeftMostZero(int i, int l, int r) {
+        propogate(i, l, r);
+
+        if(segTreeMin[i] > 0 || segTreeMax[i] < 0) {
+            return -1;
+        }
+
+        if(l == r) {
+            return l;
+        }
+
+        int mid = l + (r - l) / 2;
+        int leftResult = findLeftMostZero(2 * i + 1, l, mid);
+        if(leftResult != -1) {
+            return leftResult;
+        }
+
+        int rightResult = findLeftMostZero(2 * i + 2, mid + 1, r);
+        return rightResult;
+    }
+
+    int longestBalanced(vector<int>& nums) {
+        n = nums.size();
+        segTreeMin.assign(4 * n, 0);
+        segTreeMax.assign(4 * n, 0);
+        lazy.assign(4 * n, 0);
+
+        // treating even = +1 & odd = -1
+        vector<int> cumSum(n, 0);
+
+        int maxL = 0;
+
+        unordered_map<int, int> mp;
+
+        for(int r = 0; r < n; r++) {
+            int val = (nums[r] & 1) ? -1 : 1;
+
+            int prev = -1;
+            if(mp.count(nums[r])) {
+                prev = mp[nums[r]];
+            }
+
+            if(prev != -1) { // seen this element before
+                // [0 ... prev] we are adding (-val) in this range
+                updateRange(0, prev, 0, 0, n - 1, -val);
+            }
+            
+            // [0 ... r] we are val in ths range
+            updateRange(0, r, 0, 0, n - 1, val);
+
+            // finding leftmost 0 in this range [0 ... r]
+            int l = findLeftMostZero(0, 0, n - 1);
+            if(l != -1) {
+                maxL = max(maxL, r - l + 1);
+            }
+
+
+            mp[nums[r]] = r;
+        }
+
+        return maxL;
+    }
+};
