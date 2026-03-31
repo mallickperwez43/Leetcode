@@ -46,3 +46,76 @@ public:
         return -1;
     }
 };
+
+
+// OPTIMAL
+
+class Solution {
+public:
+    int minOperations(string s, int k) {
+        int n = s.length();
+
+        int startZeros = 0;
+        for(char& ch : s) {
+            if(ch == '0') 
+                startZeros++;
+        }
+
+        if(startZeros == 0) {
+            return 0; // no operations required
+        }
+
+        vector<int> operations(n + 1, -1);
+        // operations[z] = min operation required to reach state z(z zeros count) from startZeros
+
+        set<int> evenSet;
+        set<int> oddSet;
+
+        for(int count = 0; count <= n; count++) {
+            if(count & 1)
+                oddSet.insert(count);
+            else
+                evenSet.insert(count);
+        }
+
+        queue<int> que;
+        que.push(startZeros);
+        operations[startZeros] = 0;
+
+        if(startZeros & 1) {
+            oddSet.erase(startZeros);
+        }
+        else {
+            evenSet.erase(startZeros);
+        }
+
+        while(!que.empty()) {
+            int z = que.front();
+            que.pop();
+
+            int min_new_z = z + k - 2 * min(k, z);
+            int max_new_z = z + k - 2 * max(0, k - n + z);
+            
+            set<int> &currSet = (min_new_z & 1) ? oddSet : evenSet;
+
+            auto it = currSet.lower_bound(min_new_z);
+
+            while(it != currSet.end() && *it <= max_new_z) {
+                int newZ = *it; // z + k - 2 * f
+
+                if(operations[newZ] == -1) {
+                    operations[newZ] = operations[z] + 1;
+                    
+                    if(newZ == 0)
+                        return operations[newZ];
+                    
+                    que.push(newZ);
+                }
+
+                it = currSet.erase(it);
+            }
+        }
+
+        return -1;
+    }
+};
