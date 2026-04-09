@@ -1,0 +1,42 @@
+// Recursion + Memoization
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+
+    int solve(int onesLeft, int zerosLeft, bool lastWasOne, int limit, vector<vector<vector<int>>>& dp) {
+        if(onesLeft == 0 && zerosLeft == 0)
+            return 1;
+        
+        if(dp[onesLeft][zerosLeft][lastWasOne] != -1) 
+            return dp[onesLeft][zerosLeft][lastWasOne];
+
+        int result = 0;
+
+        if(lastWasOne) { // explore zeros
+            for(int len = 1; len <= min(zerosLeft, limit); len++) {
+                result = (result + solve(onesLeft, zerosLeft - len, false, limit, dp)) % M;
+            }
+        }
+        else { // explore ones
+            for(int len = 1; len <= min(onesLeft, limit); len++) {
+                result = (result + solve(onesLeft - len, zerosLeft, true, limit, dp)) % M;
+            }
+        }
+
+        return dp[onesLeft][zerosLeft][lastWasOne] = result;
+    }
+
+    int numberOfStableArrays(int zero, int one, int limit) {
+
+        vector<vector<vector<int>>> dp(one + 1, vector<vector<int>>(zero + 1, vector<int>(2, -1)));
+
+        int startWithOne  = solve(one, zero, false, limit, dp);
+        int startWithZero = solve(one, zero, true, limit, dp);
+        
+        return (startWithZero + startWithOne) % M;
+    }
+};
+
+// TC : O(one * zero * 2 * limit)
+// SC : O(one * zero * 2)
