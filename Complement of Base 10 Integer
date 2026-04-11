@@ -1,0 +1,21 @@
+// Approach 1
+
+class Solution {
+public:
+    int bitwiseComplement(int n) {
+        if(n == 0)
+            return 1;
+        
+        int result = 0;
+        int counter = 0;
+
+        while(n) {
+            int r = n % 2;
+            result += ((1 << counter) * !r); // (pow(2, counter) * !r);
+            counter++;
+            n >>= 1; // n /= 2;
+        }
+
+        return result;
+    }
+};
