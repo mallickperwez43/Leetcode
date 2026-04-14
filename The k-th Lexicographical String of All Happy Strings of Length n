@@ -1,0 +1,38 @@
+// Approach 1
+
+class Solution {
+public:
+    
+    void solve(int n, string& cur, vector<string>& result) {
+        if(cur.length() == n) {
+            result.push_back(cur);
+            return;
+        }
+
+        for(char ch = 'a'; ch <= 'c'; ch++) {
+            if(!cur.empty() && cur.back() == ch)
+                continue;
+            
+            cur.push_back(ch); // DO
+            solve(n, cur, result); // EXPLORE
+            cur.pop_back();  // UNDO
+        }
+    }
+
+    string getHappyString(int n, int k) {
+        string cur = "";
+
+        vector<string> result;
+
+        solve(n, cur, result);
+
+        if(result.size() < k) {
+            return "";
+        }
+
+        return result[k - 1];
+    }
+};
+
+// TC : O(n * 2 ^ n)
+// SC : O(n * 2 ^ n)
