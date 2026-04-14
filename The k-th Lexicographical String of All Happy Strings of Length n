@@ -36,3 +36,43 @@ public:
 
 // TC : O(n * 2 ^ n)
 // SC : O(n * 2 ^ n)
+
+
+// Approach 2
+
+class Solution {
+public:
+    
+    void solve(int n, string& cur, int &count, int &k, string& result) {
+        if(cur.length() == n) {
+            count++;
+            if(count == k) {
+                result = cur;
+            }
+            return;
+        }
+
+        for(char ch = 'a'; ch <= 'c'; ch++) {
+            if(!cur.empty() && cur.back() == ch)
+                continue;
+            
+            cur.push_back(ch); // DO
+            solve(n, cur, count, k, result); // EXPLORE
+            cur.pop_back();  // UNDO
+        }
+    }
+
+    string getHappyString(int n, int k) {
+        string cur = "";
+
+        string result = "";
+        int count = 0;
+
+        solve(n, cur, count, k, result);
+
+        return result;
+    }
+};
+
+// TC : O(n * 2 ^ n)
+// SC : O(n)
