@@ -1,0 +1,46 @@
+class Solution {
+public:
+    typedef long long ll;
+    bool canPartitionGrid(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        vector<ll> rowSum(m, 0);
+        vector<ll> colSum(n, 0);
+
+        ll totalSum = 0;
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+
+                totalSum += grid[i][j];
+
+                rowSum[i] += grid[i][j];
+
+                colSum[j] += grid[i][j];
+            }
+        }
+
+        // early check
+        if(totalSum & 1)
+            return false;
+
+        // check for row-wise horizontal split
+        ll upper = 0;
+        for(int row = 0; row <= m - 2; row++) {
+            upper += rowSum[row];
+            if(upper == totalSum - upper)
+                return true;
+        }
+
+        // check for col-wise vertical split
+        ll left = 0;
+        for(int col = 0; col <= n - 2; col++) {
+            left += colSum[col];
+            if(left == totalSum - left)
+                return true;
+        }
+
+        return false;
+    }
+};
