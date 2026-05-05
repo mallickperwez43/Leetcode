@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<int> survivedRobotsHealths(vector<int>& positions, vector<int>& healths, string directions) {
+        // sort on the basis of the positons ids
+        int n = positions.size();
+        vector<int> ids;
+        for(int i = 0; i < n; i++){
+            ids.push_back(i);
+        }
+
+        sort(ids.begin(), ids.end(), [&](int id1, int id2){
+            return positions[id1] <= positions[id2];
+        });
+
+        stack<int> st;
+        for(auto id : ids){
+            // push all the robots index in stack whos direction is Right 
+            if(directions[id] == 'R'){
+                st.push(id);
+            }
+            else{
+                // found a robot that has Left direction
+                // start collision
+                while(!st.empty() and healths[id] > 0){ 
+                    if(healths[id] > healths[st.top()]){
+                        // case 1 : when Left robot has more health
+                        healths[id]--;
+                        healths[st.top()] = 0;
+                        st.pop();
+                    }
+                    else if(healths[id] < healths[st.top()]){
+                        // case 2 : when Right robot has more health
+                        healths[st.top()]--;
+                        healths[id] = 0;
+                        // stack robot still exist
+                    }
+                    else{
+                        // case 3 : when both robot has same health both die
+                        healths[id] = 0;
+                        healths[st.top()] = 0;
+                        st.pop();
+                    }
+                }
+            }
+        }
+        
+        // because the ordering of the health array isnt disturbed 
+        vector<int> ans;
+        for(int i = 0; i < n; i++){
+            if(healths[i] > 0){
+                ans.push_back(healths[i]);
+            }
+        }
+
+        return ans;
+    }
+};
+
+// TC : O(nlogn) -> sort
+// SC : O(n) -> stack
