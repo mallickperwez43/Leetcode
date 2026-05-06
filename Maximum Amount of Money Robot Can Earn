@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int m, n;
+
+    int solve(int i, int j, int neutralCount, vector<vector<int>>& coins, vector<vector<vector<int>>>& dp) {
+        if(i == m - 1 && j == n - 1) {
+            if(coins[i][j] < 0 && neutralCount > 0) { // neutralized robber
+                return 0;
+            }
+
+            return coins[i][j];
+        }
+
+        if(i >= m || j >= n) {
+            return INT_MIN;
+        }
+
+        if(dp[i][j][neutralCount] != INT_MIN) {
+            return dp[i][j][neutralCount];
+        }
+
+        // Take current cell value
+        int take      = coins[i][j];
+        int takeDown  = solve(i + 1, j, neutralCount, coins, dp);
+        int takeRight = solve(i, j + 1, neutralCount, coins, dp);
+        take += max(takeDown, takeRight);
+
+        // Skip the current cell value(if possible) 
+        int skip = INT_MIN;
+        if(coins[i][j] < 0 && neutralCount > 0) {
+            int skipDown  = solve(i + 1, j, neutralCount - 1, coins, dp);
+            int skipRight = solve(i, j + 1, neutralCount - 1, coins, dp);
+            skip = max(skipDown, skipRight);
+        }
+
+        return dp[i][j][neutralCount] = max(take, skip);
+    } 
+
+    int maximumAmount(vector<vector<int>>& coins) {
+        m = coins.size();
+        n = coins[0].size();
+
+        vector<vector<vector<int>>> dp(m + 1, vector<vector<int>>(n + 1, vector<int>(3, INT_MIN)));
+
+        return solve(0, 0, 2, coins, dp);
+    }
+};
