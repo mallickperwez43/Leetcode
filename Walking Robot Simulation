@@ -1,0 +1,51 @@
+class Solution {
+public:
+    int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
+        // store obstacle in set
+        unordered_set<string> st;
+        for(vector<int>& obs : obstacles){ // O(m)
+            string key = to_string(obs[0]) + "_" + to_string(obs[1]);
+            st.insert(key);
+        }
+        
+        // start at origin
+        int x = 0;
+        int y = 0;
+        int maxD = 0;
+
+        // pointing to north
+        pair<int, int> dir = {0, 1}; // N
+        
+        // overall -> O(n * maxVal)
+        for(int i = 0; i < commands.size(); i++){ // O(n)
+            if(commands[i] == -2){ // left 90 Deg
+                dir = {-dir.second, dir.first};
+            }
+            else if(commands[i] == -1){ // right 90 Deg
+                dir = {dir.second, -dir.first};
+            }
+            else{ // move to the dirn step by step
+                for(int step = 0; step < commands[i]; step++){ // O(maxVal)
+                    int newX = x + dir.first;
+                    int newY = y + dir.second;
+
+                    string nextKey = to_string(newX) + "_" + to_string(newY);
+
+                    if(st.find(nextKey) != st.end()){
+                        break; // obstacle
+                    }
+
+                    x = newX;
+                    y = newY;
+                }
+            }
+
+            maxD = max(maxD, x * x  + y * y);
+        }
+
+        return maxD;
+    }
+};
+
+// TC : O(m + n * maxVal)
+// SC : O(m)
