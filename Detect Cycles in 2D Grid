@@ -1,0 +1,51 @@
+// DFS
+
+class Solution {
+public:
+    int m;
+    int n;
+    vector<vector<int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    bool dfs(int i, int j, int parentI, int parentJ, char ch, vector<vector<char>>& grid, vector<vector<bool>>& visited) {
+        visited[i][j] = true;
+
+        auto isValid = [&](int i, int j) {
+            return (i >= 0 && i < m && j >= 0 && j < n && grid[i][j] == ch && !(parentI == i && parentJ == j));
+        };
+
+        for(auto& dir : directions) {
+            int i_ = i + dir[0];
+            int j_ = j + dir[1];
+
+            if(isValid(i_, j_)) {
+                if(visited[i_][j_]) // i_ j_ is already visited
+                    return true;
+
+                if(dfs(i_, j_, i, j, ch, grid, visited)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+      
+    bool containsCycle(vector<vector<char>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(!visited[i][j]) {
+                    if(dfs(i, j, -1, -1, grid[i][j], grid, visited)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+};
