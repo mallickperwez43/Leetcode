@@ -49,3 +49,74 @@ public:
         return false;
     }
 };
+
+
+// BFS
+
+class Solution {
+public:
+    int m;
+    int n;
+    vector<vector<int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    
+    bool bfs(int startI, int startJ, vector<vector<char>>& grid, vector<vector<bool>>& visited) {
+        char ch = grid[startI][startJ];
+
+        queue<vector<int>> q; // {i, j, parentI, parentJ}
+
+        q.push({startI, startJ, -1, -1});
+        visited[startI][startJ] = true;
+
+        auto isValid = [&](int i, int j, int parentI, int parentJ) {
+            return (i >= 0 && i < m && j >= 0 && j < n && grid[i][j] == ch && !(parentI == i && parentJ == j));
+        };
+
+        while(!q.empty()) {
+            auto curr = q.front();
+            q.pop();
+
+            int i       = curr[0];
+            int j       = curr[1];
+            int parentI = curr[2];
+            int parentJ = curr[3];
+
+            for(auto& dir : directions) {
+                int i_ = i + dir[0];
+                int j_ = j + dir[1];
+
+                if(isValid(i_, j_, i, j)) {
+                    if(visited[i_][j_]) {
+                        if(i_ != parentI || j_ != parentJ) {
+                            return true;
+                        }
+                    }
+                    else {
+                        visited[i_][j_] = true;
+                        q.push({i_, j_, i, j});
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+      
+    bool containsCycle(vector<vector<char>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(!visited[i][j]) {
+                    if(bfs(i, j, grid, visited)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+};
