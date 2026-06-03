@@ -1,0 +1,56 @@
+class Solution {
+public: 
+    int m, n;
+
+    unordered_map<int, vector<vector<int>>> directions = {
+        {1, {{0, -1}, {0, 1}}},
+        {2, {{-1, 0}, {1, 0}}},
+        {3, {{0, -1}, {1, 0}}},
+        {4, {{0, 1}, {1, 0}}},
+        {5, {{0, -1}, {-1, 0}}},
+        {6, {{-1, 0}, {0, 1}}},
+    };  
+
+    bool dfs(int i, int j, vector<vector<int>>& grid, vector<vector<bool>>& visited) {
+        if(i == m - 1 && j == n - 1)
+            return true;
+        
+        visited[i][j] = true;
+
+        auto isValid = [&](int i, int j) {
+            return (i >= 0 && i < m && j >= 0 && j < n && !visited[i][j]);
+        };
+
+        for(auto& dir : directions[grid[i][j]]) {
+            int i_ = i + dir[0];
+            int j_ = j + dir[1];
+
+            if(!isValid(i_, j_)) {
+                continue;
+            }
+
+            // Important : can you reach back to (i, j) from (i_, j_)
+            for(auto& backDir: directions[grid[i_][j_]]) {
+                int i__ = i_ + backDir[0];
+                int j__ = j_ + backDir[1];
+
+                if(i__ == i && j__ == j) {
+                    if(dfs(i_, j_, grid, visited)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    bool hasValidPath(vector<vector<int>>& grid) {
+        m = grid.size();    
+        n = grid[0].size();
+
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        return dfs(0, 0, grid, visited);
+    }
+};
