@@ -1,0 +1,57 @@
+// Recursion + Memoization
+
+class Solution {
+public:
+    typedef long long ll;
+    int n;
+
+    ll solve(int prevHeight, int col, bool prevTaken, vector<vector<int>>& grid, vector<vector<ll>>& colPrefSum, vector<vector<vector<ll>>>& dp) {
+
+        if(col == n) {
+            return 0;
+        }
+
+        ll result = 0;
+
+        if(dp[prevHeight][col][prevTaken] != -1) {
+            return dp[prevHeight][col][prevTaken];
+        }
+
+        for(int height = 0; height <= n; height++) {
+            ll prevColScore = 0;
+            ll currColScore = 0;
+
+            if(!prevTaken && col - 1 >= 0 && height > prevHeight) {
+                prevColScore += colPrefSum[height][col] - colPrefSum[prevHeight][col];
+            }
+
+            if(prevHeight > height) {
+                currColScore += colPrefSum[prevHeight][col + 1] - colPrefSum[height][col + 1];
+            }
+
+            ll currColScoreTaken    = currColScore + prevColScore + solve(height, col + 1, true, grid, colPrefSum, dp);
+            ll currColScoreNotTaken = prevColScore + solve(height, col + 1, false, grid, colPrefSum, dp);
+
+            result = max({result, currColScoreTaken, currColScoreNotTaken});
+        }
+
+        return dp[prevHeight][col][prevTaken] = result;
+    }
+
+    long long maximumScore(vector<vector<int>>& grid) {
+        n = grid.size();
+
+        // col prefix sum
+        vector<vector<ll>> colPrefSum(n + 1, vector<ll>(n + 1, 0));
+
+        for(int col = 1; col <= n; col++) {
+            for(int row = 1; row <=n; row++) {
+                colPrefSum[row][col] = colPrefSum[row - 1][col] + grid[row - 1][col - 1];
+            }
+        }    
+
+        vector<vector<vector<ll>>> dp(n + 1, vector<vector<ll>>(n + 1, vector<ll>(2, -1)));
+        
+        return solve(0, 0, false, grid, colPrefSum, dp);
+    }
+};
