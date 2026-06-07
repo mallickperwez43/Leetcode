@@ -1,0 +1,43 @@
+// Recursion + Memoization
+
+class Solution {
+public: 
+    int m, n;
+
+    int solve(int i, int j, int cost, int k, vector<vector<int>>& grid, vector<vector<vector<int>>>& dp) {
+        if(i >= m || j >= n) 
+            return INT_MIN;
+
+        int newCost = cost + (grid[i][j] > 0 ? 1 : 0);
+
+        if(newCost > k)
+            return INT_MIN;
+        
+        if(i == m - 1 && j == n - 1) 
+            return grid[i][j];
+        
+        if(dp[i][j][cost] != -1)
+            return dp[i][j][cost];
+        
+        int down  = solve(i, j + 1, newCost, k, grid, dp);
+        int right = solve(i + 1, j, newCost, k, grid, dp);
+
+        int bestNext = max(down, right);
+
+        if(bestNext == INT_MIN)
+            return dp[i][j][cost] = INT_MIN;
+        
+        return dp[i][j][cost] = bestNext + grid[i][j];
+    }
+
+    int maxPathScore(vector<vector<int>>& grid, int k) {
+        m = grid.size();    
+        n = grid[0].size();
+
+        vector<vector<vector<int>>> dp(m + 1, vector<vector<int>>(n + 1, vector<int>(k + 1, -1)));
+
+        int result = solve(0, 0, 0, k, grid, dp);
+
+        return result == INT_MIN ? -1 : result;  
+    }
+};
