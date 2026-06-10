@@ -31,3 +31,57 @@ public:
         return count;
     }
 };
+
+
+
+// Appraoch 2 (Recursion + Memoization)
+
+class Solution {
+public:
+    int solve(int num, vector<int>& dp) {
+        if(dp[num] != -1)
+            return dp[num];
+
+        if(num == 0)
+            return dp[num] = 0;
+
+        int remain = solve(num / 10, dp);
+        if(remain == 2)
+            return dp[num] = 2;
+
+        int digit_check;
+        int d = num % 10;
+
+        if(d == 0 || d == 1 || d == 8)
+            digit_check = 0; // same;
+        else if(d == 2 || d == 5 || d == 6 || d == 9)
+            digit_check = 1; // changed(good)
+        else
+            return dp[num] = 2; // invalid
+
+        if(remain == 0 && digit_check == 0) 
+            return dp[num] = 0;
+        
+        // if(remain == 2 || digit_check == 2)
+        //     return 2;
+
+        return dp[num] = 1;
+    }
+
+    int rotatedDigits(int n) {
+        int count = 0;
+        
+        vector<int> dp(n + 1, -1);
+
+        // 0 : same
+        // 1 : changed(good)
+        // 2 : invalid 
+
+        for(int i = 1; i <= n; i++) {
+            if(solve(i, dp) == 1)
+                count++;
+        }
+
+        return count;
+    }
+};
