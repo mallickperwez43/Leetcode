@@ -85,3 +85,57 @@ public:
         return count;
     }
 };
+
+
+// Appraoch 3 (Bottom Up)
+
+class Solution {
+public:
+    int rotatedDigits(int n) {
+        int count = 0;
+        
+        vector<int> dp(n + 1, -1);
+
+        // 0 : same
+        // 1 : changed(good)
+        // 2 : invalid 
+
+        dp[0] = 0;
+
+        for(int i = 1; i <= n; i++) {
+
+            int remain = dp[i / 10];
+            if(remain == 2) {
+                dp[i] = 2;
+                continue;
+            }
+
+            int digit_check;
+            int d = i % 10;
+
+            if(d == 0 || d == 1 || d == 8)
+                digit_check = 0; // same;
+            else if(d == 2 || d == 5 || d == 6 || d == 9)
+                digit_check = 1; // changed(good)
+            else {
+                dp[i] = 2; // invalid
+                continue;
+            }
+
+            if(remain == 0 && digit_check == 0) 
+                dp[i] = 0;
+            else
+                dp[i] = 1;
+
+            
+            // if(remain == 2 || digit_check == 2)
+            //     return 2;
+
+
+            if(dp[i] == 1)
+                count++;
+        }
+
+        return count;
+    }
+};
