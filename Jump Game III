@@ -26,3 +26,49 @@ public:
         return dfs(arr, start);
     }
 };
+
+
+
+// BFS
+
+class Solution {
+public:
+    int n;
+
+    bool bfs(vector<int>& arr, int start) {
+        queue<int> que;
+        vector<bool> visited(n , false);
+
+        que.push(start);
+        visited[start] = true;
+
+        while(!que.empty()) {
+            int i = que.front();
+            que.pop();
+
+            if(arr[i] == 0)
+                return true;
+            
+            int left  = i - arr[i];
+
+            if(left >= 0 && !visited[left]) {
+                visited[left] = true;
+                que.push(left);
+            }
+
+            int right = i + arr[i];
+            if(right < n && !visited[right]) {
+                visited[right] = true;
+                que.push(right);
+            }
+        }
+
+        return false;
+    }
+
+    bool canReach(vector<int>& arr, int start) {
+        n = arr.size();
+
+        return bfs(arr, start);
+    }
+};
