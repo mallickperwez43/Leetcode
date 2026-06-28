@@ -1,0 +1,75 @@
+struct TrieNode {
+    // char digit;
+    TrieNode* children[10]; // [0..9]
+};
+
+class Solution {
+public:
+    
+    TrieNode* getTrieNode() {
+        TrieNode* node = new TrieNode();
+        for(int i = 0; i < 10; i++){
+            node -> children[i] = NULL;
+        }
+
+        return node;
+    }
+
+    void insert(int num, TrieNode* root){
+        TrieNode* crawl = root;
+        string numStr = to_string(num);
+
+        for(char ch : numStr){ // O(d) -> digits in numStr
+            int idx = ch - '0';
+            if(!crawl -> children[idx]){
+                crawl -> children[idx] = getTrieNode();
+            }
+
+            crawl = crawl -> children[idx];
+        }
+    }
+    
+    // returns the length of the longest prefix
+    int search(int num, TrieNode* root){
+        TrieNode* crawl = root;
+        string numStr = to_string(num);
+        int length = 0;
+
+        for(char ch : numStr){
+            int idx = ch - '0';
+            if(crawl -> children[idx]){
+                length++;
+                crawl = crawl -> children[idx];
+            }
+            else{
+                break;
+            }
+        }
+
+        return length;
+    }
+
+
+    int longestCommonPrefix(vector<int>& arr1, vector<int>& arr2) {
+        TrieNode* root = getTrieNode(); // TRIE
+        
+        // insert all elements of arr1 in trie
+        // TC : O(m * d)
+        for(int num : arr1){ // O(m) m -> length of arr1 , d -> length of digits
+            insert(num, root); // O(d)
+        }
+
+        int result = 0; // LCP
+
+        // search LCP for all elements of arr2 with trie
+        // TC : O(n * D)
+        for(int num : arr2){ // O(n) n -> length of arr2 , D -> lenght of digits
+            result = max(result, search(num, root)); // O(D)
+        }
+
+        return result;
+    }
+};
+
+// TC : O(m*d + n*D)
+// SC : O(m*Di) // Di -> max digits in arr1
