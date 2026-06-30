@@ -1,0 +1,39 @@
+class Solution {
+public:
+    bool canReach(string s, int minJump, int maxJump) {
+        int n = s.length();
+
+        if(s[n - 1] == '1')
+            return false;
+
+        queue<int> que;
+        vector<bool> visited(n, false);
+
+        que.push(0);
+        visited[0] = true;
+
+        int farthest = 0;
+
+        while(!que.empty()) {
+            int curr = que.front();
+            que.pop();
+
+            if(curr == n - 1)
+                return true;
+            
+            int l = max(curr + minJump, farthest + 1);
+            int r = min(curr + maxJump, n - 1);
+
+            for(int j = l; j <= r; j++) {
+                if(s[j] == '0' && !visited[j]) {
+                    que.push(j);
+                    visited[j] = true;
+                }
+            }
+
+            farthest = max(farthest, r);
+        }
+
+        return false;
+    }
+};
