@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int numberOfSpecialChars(string word) {
+        vector<int> freq(123, 0);
+        int specialCnt = 0;
+
+        for(char& ch : word) {
+            freq[ch]++;
+
+            if(islower(ch)) {
+                if(freq[ch] == 1 && freq[toupper(ch)] > 0)
+                    specialCnt++;    
+            }
+            else {
+                if(freq[ch] == 1 && freq[tolower(ch)] > 0)
+                    specialCnt++;    
+            }                
+        }
+
+        return specialCnt;
+    }
+};
