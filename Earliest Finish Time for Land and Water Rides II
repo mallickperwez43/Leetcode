@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int solve(vector<int>& firstStart, vector<int>& firstDuration, vector<int>& secondStart, vector<int>& secondDuration) {
+        int earlyFinish = INT_MAX;
+
+        for(int i = 0; i < firstStart.size(); i++) {
+            earlyFinish = min(earlyFinish, firstStart[i] + firstDuration[i]);
+        }
+
+        int result = INT_MAX;
+        for(int i = 0; i < secondStart.size(); i++) {
+            int startSecond = max(earlyFinish, secondStart[i]);
+            int finishSecond = startSecond + secondDuration[i];
+
+            result = min(result, finishSecond);
+        }
+
+        return result;
+    }
+    
+    int earliestFinishTime(vector<int>& landStartTime, vector<int>& landDuration, vector<int>& waterStartTime, vector<int>& waterDuration) {
+        int landFirst  = solve(landStartTime, landDuration, waterStartTime, waterDuration);
+        int waterFirst = solve(waterStartTime, waterDuration, landStartTime, landDuration);
+
+        return min(landFirst, waterFirst);
+    }
+};
