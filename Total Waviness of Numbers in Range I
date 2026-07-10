@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int findWaviScore(int num) {
+        string s = to_string(num);
+        int n = s.length();
+        if(n < 3)
+            return 0;
+        
+        int score = 0;
+
+        for(int i = 1; i <= n - 2; i++) {
+            int curr  = s[i] - '0';
+            int left  = s[i - 1] - '0';
+            int right = s[i + 1] - '0';
+
+            // peak
+            if(curr > left && curr > right)
+                score++;
+            
+            // valley
+            if(curr < left && curr < right)
+                score++;
+        }
+
+        return score;
+    }
+    int totalWaviness(int num1, int num2) {
+        int score = 0;
+
+        for(int num = num1; num <= num2; num++) {
+            score += findWaviScore(num);
+        }
+
+        return score;
+    }
+};
+
+// TC : O(num2 - num1) * log10(num)
+// SC : O(log(num))
