@@ -1,0 +1,51 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
+        unordered_map<int, TreeNode*> mp; // {node -> address of that node}
+        unordered_set<int> childSet; // storing all child nodes
+
+        for(auto& desc : descriptions) {
+            int parent = desc[0];
+            int child  = desc[1];
+            int isLeft = desc[2];
+
+            if(!mp.count(parent)) {
+                mp[parent] = new TreeNode(parent);
+            }
+
+            if(!mp.count(child)) {
+                mp[child] = new TreeNode(child);
+            }
+
+            if(isLeft) {
+                mp[parent] -> left = mp[child];
+            } 
+            else {
+                mp[parent] -> right = mp[child];
+            }
+
+            childSet.insert(child);
+        }
+
+        // root has no parent ie it wont be child of anyone
+        for(auto& desc : descriptions) {
+            int parent = desc[0];
+            if(!childSet.count(parent)) {
+                return mp[parent];
+            }
+        }
+
+        return NULL; // controll will never reach here
+    }
+};
