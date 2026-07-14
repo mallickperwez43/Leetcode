@@ -35,3 +35,49 @@ public:
 
 // TC : O(n + n) ~ O(n)
 // SC : O(n)
+
+
+// Approach 2 - Space Optimal pointers
+
+class Solution {
+public:
+    vector<int> pivotArray(vector<int>& nums, int pivot) {
+        int n = nums.size();
+
+        int countless = 0;
+        int countequal = 0;
+
+        for(int& num : nums) {
+            if(num < pivot) {
+                countless++;
+            }
+            else if(num == pivot) {
+                countequal++;
+            }
+        }
+
+        int i = 0; // less than
+        int j = countless;  // equal
+        int k = countless + countequal; // more than
+        vector<int> result(n); 
+        for(int& num : nums) {
+            if(num < pivot) {
+                result[i] = num;
+                i++;
+            }
+            else if(num == pivot) {
+                result[j] = num;
+                j++;
+            }
+            else {
+                result[k] = num;
+                k++;
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n + n) ~ O(n)
+// SC : O(1)
