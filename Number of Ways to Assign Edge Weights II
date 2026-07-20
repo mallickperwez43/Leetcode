@@ -1,0 +1,108 @@
+class Solution {
+public:
+    int M = 1e9 + 7;
+    int n;
+    int cols;
+
+    unordered_map<int, vector<int>> adj;
+    vector<vector<int>> ancestorTable;
+    vector<int> depth;
+
+    void dfs(int node, int parent) {
+        ancestorTable[node][0] = parent;
+
+        for(int& ngbr : adj[node]) {
+            if(ngbr == parent) continue;
+
+            depth[ngbr] = depth[node] + 1;
+
+            dfs(ngbr, node);
+        }
+    }
+
+    void buildAncestorTable() {
+        for(int jump = 1; jump < cols; jump++) {
+            for(int node = 0; node < n; node++) {
+                if(ancestorTable[node][jump - 1] != -1) {
+                    ancestorTable[node][jump] = ancestorTable[ ancestorTable[node][jump - 1] ][jump - 1];
+                }
+            }
+        }
+    }
+
+    int findLCA(int u, int v) {
+        if(depth[u] < depth[v]) 
+            swap(u, v);
+        
+        int k = depth[u] - depth[v];
+
+        // jump to make it on same depth
+        for(int jump = 0; jump < cols; jump++) {
+            if(k & (1 << jump)) {
+                u = ancestorTable[u][jump];
+            }
+        }
+
+        if(u == v) { // both were on the same path
+            return u;
+        }
+
+        // try for all jump in binary way so we get LCA
+        for(int jump = cols - 1; jump >= 0; jump--) {
+            if(ancestorTable[u][jump] == -1) {
+                continue;
+            }
+
+            if(ancestorTable[u][jump] != ancestorTable[v][jump]) { // keep jumping upwards
+                u = ancestorTable[u][jump];
+                v = ancestorTable[v][jump];
+            }
+        }
+
+        return ancestorTable[v][0]; 
+    }   
+
+    vector<int> assignEdgeWeights(vector<vector<int>>& edges, vector<vector<int>>& queries) {
+        n = edges.size() + 1; // no of nodes
+        cols = log2(n) + 1;
+
+        for(auto& edge : edges) {
+            int u = edge[0] - 1;
+            int v = edge[1] - 1;
+
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        depth.resize(n, 0);
+        ancestorTable.resize(n, vector<int>(cols, -1));
+        
+        dfs(0, -1);
+        buildAncestorTable();
+
+        // Precompute power of 2
+        vector<int> pow2(n + 1);
+        pow2[0] = 1;
+        for(int i = 1; i <= n; i++) {
+            pow2[i] = (2LL * pow2[i - 1]) % M;
+        }
+
+        vector<int> result;
+        for(auto& query : queries) {
+            int u = query[0] - 1;
+            int v = query[1] - 1;
+
+            int lca = findLCA(u, v);
+            int d = depth[u] + depth[v] - 2 * depth[lca];
+
+            if(d == 0) {
+                result.push_back(0);
+            }
+            else {
+                result.push_back(pow2[d - 1]);
+            }
+        }
+
+        return result;
+    }
+};
