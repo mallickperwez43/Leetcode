@@ -83,3 +83,69 @@ public:
 
 // TC : O(2n)
 // SC : O(n)
+
+
+// Approach 3 (using Hare and Tortoise Algo)
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* findMid(ListNode*& node) {
+        ListNode* slow = node;
+        ListNode* fast = node;
+
+        while(fast != NULL && fast -> next != NULL) {
+            slow = slow -> next;
+            fast = fast -> next -> next;
+        }
+
+        return slow;
+    }
+
+    ListNode* reverseLL(ListNode*& node) {
+        ListNode* curr  = node;
+        ListNode* prev  = NULL;
+        ListNode* ahead = NULL;
+        
+        while(curr != NULL) {
+            ahead = curr -> next;
+            curr -> next = prev;
+            prev = curr;
+            curr = ahead;
+        }
+
+        return prev;
+    }
+
+    int pairSum(ListNode* head) {
+        // 1] Find mid
+        ListNode* mid = findMid(head);
+
+        // 2] Reversing 2nd half of LL
+        mid = reverseLL(mid);
+
+        // 3] Find max Result
+        int result = 0;
+        ListNode* curr = head;
+
+        while(mid != NULL) {
+            result = max(result, curr -> val + mid -> val);
+            curr = curr -> next;
+            mid = mid -> next;
+        }
+
+        return result;
+    }
+};
+
+// TC : O(2n)
+// SC : O(1)
