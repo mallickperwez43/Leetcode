@@ -1,0 +1,19 @@
+// Method 1
+
+class Solution {
+public:
+    double angleClock(int hour, int minutes) {
+        // considering 00, 12 as reference point
+        double minuteAngle = minutes * 6; // in degrees
+
+        double hourAlone = (hour % 12) * 30;
+        double minuteDeviationInHour = minutes * 0.5;
+
+        double hourAngle = hourAlone + minuteDeviationInHour;
+
+        double angle_1 = abs(hourAngle - minuteAngle);
+        double angle_2 = 360 - angle_1;
+
+        return min(angle_1, angle_2);
+    };
+};
