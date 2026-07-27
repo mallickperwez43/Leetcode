@@ -1,0 +1,14 @@
+class Solution {
+public:
+    int largestAltitude(vector<int>& gain) {
+        int maxAlt = 0;
+        int currH = 0; // starting at alt = 0;
+
+        for(int& g : gain) {
+            currH  += g; // net gain is currH
+            maxAlt = max(maxAlt, currH);
+        }
+
+        return maxAlt;
+    }
+};
