@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+        restrictions.push_back({1, 0}); // left limit
+        restrictions.push_back({n, n - 1}); // right limit
+
+        // sort (to be prev and , in a manner)
+        sort(restrictions.begin(), restrictions.end());
+
+        int N = restrictions.size();
+
+        // Correction on restrictions
+        // Left to right
+        for(int i = 1; i < N; i++) {
+            int dist           = restrictions[i][0] - restrictions[i - 1][0]; // ID(i - 1) .... ID(i) 
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i - 1][1] + dist);
+        }
+
+        // Correction on restrictions
+        // Right to left
+        for(int i = N - 2; i >= 0; i--) {
+            int dist          = restrictions[i + 1][0] - restrictions[i][0]; // ID(i) .... ID(i + 1) 
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i + 1][1] + dist);
+        }
+
+        // Calculating result
+        int result = 0;
+
+        for(int i = 1; i < N; i++) {
+            // get prev restricted building id and maxheight
+            int prevId = restrictions[i - 1][0];
+            int prevHt = restrictions[i - 1][1];
+
+            // get curr restricted building id and maxheight
+            int currId = restrictions[i][0];
+            int currHt = restrictions[i][1];
+
+            // get diff b/w prev and curr id as well as height
+            int diffId = currId - prevId;
+            int diffHt = abs(currHt - prevHt);
+            
+            // max(H1, H2) + ((ID2 - ID1) + (abs(H1 - H2)) / 2 
+            int peak = max(currHt, prevHt) + (diffId - diffHt) / 2;
+
+            result = max(result, peak);
+        }
+
+        return result;
+    }
+};
