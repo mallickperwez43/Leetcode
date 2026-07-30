@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int maxIceCream(vector<int>& costs, int coins) {
+        int maxCost = *max_element(costs.begin(), costs.end());
+
+        vector<int> count(maxCost + 1, 0);
+
+        for(int& cost : costs) {
+            count[cost]++;
+        }
+
+        int total = 0;
+        for(int cost = 1; cost <= maxCost; cost++) {
+            if(count[cost] == 0) continue;
+
+            if(coins < cost) break;
+
+            int buyCnt = min(count[cost], coins / cost);
+            total += buyCnt;
+            coins -= buyCnt * cost;
+        }
+
+        return total;
+    }
+};
