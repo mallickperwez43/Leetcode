@@ -1,0 +1,56 @@
+// Approach 1 - Recursion + Memoization -> TLE
+
+class Solution {
+public:
+    typedef long long ll;
+    int MOD = 1e9 + 7;
+    int N, M;
+
+    int dp[2001][2001][2];
+    
+    int solve(int i, int prevVal, bool increasing) {
+        if(i == N) { // found a zigzag array
+            return 1;
+        }
+
+        if(dp[i][prevVal][increasing] != -1) {
+            return dp[i][prevVal][increasing];
+        }
+
+        ll result = 0;
+
+        if(increasing) {
+            for(int nextVal = prevVal + 1; nextVal <= M; nextVal++) {
+                result = (result + solve(i + 1, nextVal, false)) % MOD;
+            }
+        } else {
+            for(int nextVal = 1; nextVal < prevVal; nextVal++) {
+                result = (result + solve(i + 1, nextVal, true)) % MOD;
+            }
+        }
+
+        return dp[i][prevVal][increasing] = result;
+    }
+
+    int zigZagArrays(int n, int l, int r) {
+        memset(dp, -1, sizeof(dp));
+        N = n;
+        M = r - l + 1;
+        // l = 1;
+        // r = M;
+
+        ll result = 0;
+
+        for(int startVal = 1; startVal <= M; startVal++) {
+            // i = 0 startVal put kiya
+
+            // increasing
+            result = (result + solve(1, startVal, true)) % MOD;
+            
+            // decreasing
+            result = (result + solve(1, startVal, false)) % MOD;
+        }
+
+        return result;
+    }
+};
