@@ -1,0 +1,96 @@
+class Solution {
+public:
+    typedef long long ll;
+    typedef vector<vector<long long>> Matrix;
+    const int MOD = 1e9 + 7;
+
+    Matrix matrixMul(Matrix& A, Matrix& B) {
+        ll n = A.size();
+
+        Matrix C(n, vector<ll>(n, 0));
+
+        for(int i = 0; i < n; i++) {
+            for(int k = 0; k < n; k++) {
+                if(A[i][k] == 0) continue;
+                for(int j = 0; j < n; j++) {
+                    if(B[k][j] == 0) continue;
+                    C[i][j] = (C[i][j] + (A[i][k] % MOD * B[k][j] % MOD) % MOD) % MOD;
+                }
+            }
+        } 
+
+        return C;
+    }
+
+    Matrix matrixExp(Matrix& base, ll exponent) {
+        ll n = base.size();
+
+        Matrix result(n, vector<ll>(n, 0));
+        // identity matrix
+        for(int i = 0; i < n; i++) {
+            result[i][i] = 1;
+        }
+
+        while(exponent) {
+            if(exponent & 1) {
+                result = matrixMul(result, base);
+            }
+            base = matrixMul(base , base);
+            exponent >>= 1; // exp /= 2
+        }
+
+        return result;
+    }
+
+    int zigZagArrays(int n, int l, int r) {
+        int m = r - l + 1;
+        int S = 2 * m; // [1 ... m] for Up and [m + 1... 2m] for Down // totalStates
+
+        auto Inc = [&](int v) { // mapping for Up in S(2m) size matrix
+            return v - 1;
+        };
+        
+        auto Dec = [&](int v) { // mapping for Down in S(2m) size matrix
+            return m + (v - 1);
+        };
+
+        Matrix T(S, vector<ll>(S, 0));
+
+        // fill the Transtition matrix T with 1 only where its needed
+        for(int val = 1; val <= m; val++) {
+            // val -> increasing
+            // nextVal -> decreasing [1 to val - 1]
+            for(int nextVal = 1; nextVal < val; nextVal++) {
+                T[Inc(val)][Dec(nextVal)] = 1;
+            }
+
+            // val -> decreasing
+            // nextVal -> Increasing [val + 1 to m]
+            for(int nextVal = val + 1; nextVal <= m; nextVal++) {
+                T[Dec(val)][Inc(nextVal)] = 1;
+            }
+        }
+
+        // base answer for length = 2
+        vector<ll> initial(S, 0);
+        for(int val = 1; val <= m; val++) {
+            initial[Inc(val)] = val - 1;
+            initial[Dec(val)] = m - val;
+        }
+
+        // matrix exponentiation 
+        Matrix T_pow = matrixExp(T, n - 2);
+
+        // Calculate result -> T_pow * initial
+        ll result = 0;
+        for(int i = 0; i < S; i++) {
+            ll state_sum = 0;
+            for(int j = 0; j < S; j++) {
+                state_sum = (state_sum + T_pow[i][j] * initial[j]) % MOD;
+            }
+            result = (result + state_sum) % MOD;
+        }
+
+        return result;
+    }
+};
