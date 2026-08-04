@@ -22,3 +22,39 @@ public:
         return result;
     }
 };
+
+
+// Optimal
+
+class Solution {
+public:
+    int countMajoritySubarrays(vector<int>& nums, int target) {
+        int n = nums.size();
+
+        unordered_map<int, int> mp; // cumSum -> Count
+        mp[0] = 1;
+
+        int cumSum = 0;
+
+        int validLeftPoints = 0;
+
+        int result = 0;
+
+        for (int j = 0; j < n; j++) {
+            if(nums[j] == target) {
+                validLeftPoints += mp[cumSum]; // prev all valid
+                cumSum += 1;
+            }
+            else {
+                cumSum -= 1;
+                validLeftPoints -= mp[cumSum]; // prev - 1 are all valid
+            }
+
+            mp[cumSum] += 1;
+
+            result += validLeftPoints;
+        }
+
+        return result;
+    }
+};
