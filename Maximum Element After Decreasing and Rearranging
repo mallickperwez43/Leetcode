@@ -1,0 +1,26 @@
+// Counting sort
+
+class Solution {
+public:
+    int maximumElementAfterDecrementingAndRearranging(vector<int>& arr) {
+        int n = arr.size();
+
+        // Decrease 
+        // 1, 2, 3, .... n mat till n
+        vector<int> count(n + 1, 0);
+        for(int& x : arr) {
+            count[min(x, n)]++;
+        }
+
+        int maxEl = 0; 
+
+        for(int i = 1; i <= n; i++) {
+            maxEl = min(i, maxEl + count[i]);
+        }
+
+        return maxEl;
+    }
+};
+
+// TC : O(n)
+// SC : O(n)
