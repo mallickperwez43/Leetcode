@@ -1,0 +1,73 @@
+class Solution {
+public:
+    void computeLPS(string pattern, vector<int>& lps) {
+        int M = pattern.length();
+        int len = 0;
+        lps[0] = 0; // len 0 is no prefix no suffix
+
+        int i = 1;
+
+        while(i < M) {
+            if(pattern[i] == pattern[len]) {
+                len++;
+                lps[i] = len;
+                i++;
+            }
+            else {
+                if(len != 0) {
+                    len = lps[len - 1];
+                }
+                else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+    }
+
+    bool search(string pat, string txt) {
+        int N = txt.length();
+        int M = pat.length();
+
+        vector<int> lps(M, 0);
+        computeLPS(pat, lps);
+
+        vector<int> result;
+
+        int i = 0;
+        int j = 0;
+
+        while(i < N) {
+            if(txt[i] == pat[j]) {
+                i++;
+                j++;
+            }
+
+            if(j == M) {
+               return true;
+            }
+            else if(i < N && txt[i] != pat[j]) {
+                if(j != 0) {
+                    j = lps[j - 1];
+                }
+                else {
+                    i++;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    int numOfStrings(vector<string>& patterns, string word) {
+        int count = 0;
+
+        for(string& pat : patterns) {
+            if(search(pat, word)) {
+                count++;
+            }
+        }   
+
+        return count;
+    }
+};
