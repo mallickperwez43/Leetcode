@@ -70,3 +70,69 @@ public:
         return {result.first, result.second};
     }
 };
+
+
+// Bottom Up
+
+class Solution {
+public:
+    int n;
+    int M = 1e9 + 7;
+    vector<vector<int>> directions = {{-1, 0}, {0, -1}, {-1, -1}}; // up, left, up-left
+    
+    vector<int> pathsWithMaxScore(vector<string>& board) {
+        n = board.size();
+
+        vector<vector<pair<int, int>>> dp(n + 1, vector<pair<int, int>>(n + 1, {0, 0}));
+
+        dp[0][0] = {0, 1};  // if(board[i][j] == 'E') return {0, 1};
+        
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                if((i == 0 && j == 0) || board[i][j] == 'X') { // if(board[i][j] == 'X') return {0, 0}
+                    continue;
+                }
+
+                char ch = board[i][j];
+                int curr_val = (ch != 'S' ? ch - '0' : 0);
+
+                auto isValid = [&](int i, int j) {
+                    return (i >= 0 && i < n && j >= 0 && j < n && board[i][j] != 'X');
+                };
+                
+                int bestScore = -1;
+                int bestPaths = 0;
+
+                for(auto& dir : directions) {
+                    int i_ = i + dir[0];
+                    int j_ = j + dir[1];
+
+                    if(isValid(i_, j_)) {
+                        auto [nextScore, nextPaths] = dp[i_][j_];
+
+                        // Only proceed if there is an actual valid path to 'E' from that cell               
+                        if(nextPaths > 0) {
+                            int currScore = nextScore + curr_val;
+
+                            if(currScore > bestScore) {
+                                bestScore = currScore;
+                                bestPaths = nextPaths;
+                            }
+                            else if(currScore == bestScore) {
+                                bestPaths = (bestPaths + nextPaths) % M;
+                            }
+                        }
+                    }
+                }
+
+                if(bestScore != -1) {
+                    dp[i][j] = {bestScore, bestPaths % M    };
+                }
+            }
+        }
+
+        pair<int, int> result = dp[n - 1][n - 1];
+
+        return {result.first, result.second};
+    }
+};
