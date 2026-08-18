@@ -66,3 +66,38 @@ public:
 
 // TC : O(nlogn)
 // SC : O(n)
+
+
+// Approach 3
+
+class Solution {
+public:
+    int removeCoveredIntervals(vector<vector<int>>& intervals) {
+        int n = intervals.size();
+
+        sort(intervals.begin(), intervals.end(), [&](vector<int> a, vector<int> b) {
+            if(a[0] == b[0])
+                return a[1] > b[1];
+            
+            return a[0] < b[0];
+        });
+
+        int lastIntervalEnd = intervals[0][1];
+        int count = 1;
+
+        for(int i = 1; i < n; i++) {
+
+            if(lastIntervalEnd >= intervals[i][1]) {
+                continue;
+            }
+
+            lastIntervalEnd = intervals[i][1];
+            count++;
+        }
+
+        return count;
+    }
+};
+
+// TC : O(nlogn)
+// SC : O(1)
