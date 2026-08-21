@@ -1,0 +1,67 @@
+class Solution {
+public:
+    typedef long long ll;
+    int M = 1e9 + 7;
+
+    vector<int> sumAndMultiply(string s, vector<vector<int>>& queries) {
+        int n = s.length();
+
+        vector<int> nonZeroCount(n, 0);
+        vector<ll> numberUpto(n, 0);
+        vector<ll> digitSumUpto(n, 0);
+        vector<ll> pow10(n + 1, 0);
+
+        pow10[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            pow10[i] = (pow10[i - 1] * 10) % M;
+        }
+
+        int first_digit = s[0] - '0';
+        if (first_digit != 0) {
+            nonZeroCount[0] = 1;
+            numberUpto[0] = first_digit;
+            digitSumUpto[0] = first_digit;
+        }
+        
+        for(int i = 1; i < n; i++) {
+            int digit = s[i] - '0';
+
+            if(digit != 0) {
+                nonZeroCount[i] = nonZeroCount[i - 1] + 1;
+                numberUpto[i] = ((numberUpto[i - 1] * 10) + digit) % M;
+                digitSumUpto[i] = (digitSumUpto[i - 1] + digit) % M;
+            }
+            else {
+                nonZeroCount[i] = nonZeroCount[i - 1];
+                numberUpto[i] = numberUpto[i - 1];
+                digitSumUpto[i] = digitSumUpto[i - 1];
+            }
+        }
+
+        vector<int> result;
+        for(auto& query : queries) {
+            int l = query[0];
+            int r = query[1];
+
+            // result = sum * x
+            
+            // sum = digitSum[r] - digitSum[l - 1]
+            ll sum = (((digitSumUpto[r] - ((l > 0) ? digitSumUpto[l - 1] : 0)) % M) + M) % M;
+
+            // x = numberUpto[r] - (numberUpto[l - 1] * 10 ^ k) where k = nonZero[r] - nonZero[l - 1]
+
+            ll x = 0;
+            if(l == 0) {
+                x = numberUpto[r];
+            }
+            else {
+                ll k = nonZeroCount[r] - nonZeroCount[l - 1];
+                x = (((numberUpto[r] - (numberUpto[l - 1] * pow10[k]) % M) % M) + M) % M;
+            }
+
+            result.push_back((sum * x) % M);
+        }
+
+        return result;
+    }
+};
