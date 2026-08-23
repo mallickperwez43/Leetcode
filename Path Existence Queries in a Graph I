@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<bool> pathExistenceQueries(int n, vector<int>& nums, int maxDiff, vector<vector<int>>& queries) {
+        vector<int> parent(n);
+        parent[0] = 0;
+
+        for(int node = 1; node < n; node++) {
+            if(nums[node] - nums[node - 1] <= maxDiff) { // same component
+                parent[node] = parent[node - 1];
+            }
+            else { // new component
+                parent[node] = parent[node - 1] + 1;
+            }
+        }
+
+        vector<bool> result;
+
+        for(auto& query : queries) {
+            int u = query[0];
+            int v = query[1];
+
+            result.push_back(parent[u] == parent[v]);
+        }
+
+        return result;
+    }
+};
