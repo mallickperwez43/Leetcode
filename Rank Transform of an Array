@@ -1,0 +1,36 @@
+// Appraoch 1
+
+class Solution {
+public:
+    typedef pair<int, int> P;
+    vector<int> arrayRankTransform(vector<int>& arr) {
+        int n = arr.size();
+        if (n == 0) return {};
+
+        priority_queue<P, vector<P>, greater<P>> pq; // min-heap({val, idx in arr})
+        for(int i = 0; i < n; i++) {
+            pq.push(make_pair(arr[i], i));
+        }        
+
+        vector<int> result(n);
+        int rank = 0;
+        int prev = INT_MIN;
+
+        while(!pq.empty()) {
+            auto [val, idx] = pq.top();
+            pq.pop();
+
+            if(rank == 0 || val > prev) { // handles the case for same element has same rank
+                rank++;
+            }
+
+            result[idx] = rank;
+            prev        = val;
+        }
+
+        return result;
+    }
+}; 
+
+// TC : O(nlogn) 
+// SC : O(n)
