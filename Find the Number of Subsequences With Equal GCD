@@ -1,0 +1,38 @@
+// Appraoch 1 : Recursion + Memoization
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+    int dp[201][201][201];
+
+    int solve(int i, int gcd_1, int gcd_2, vector<int>& nums) {
+        if(i == nums.size()) {
+            bool bothNonEmpty = (gcd_1 != 0 && gcd_2 != 0);
+            bool gcdMatches   = (gcd_1 == gcd_2);
+
+            return (bothNonEmpty && gcdMatches) ? 1 : 0;
+        }
+
+        if(dp[i][gcd_1][gcd_2] != -1) {
+            return dp[i][gcd_1][gcd_2];
+        }
+
+        // skip the element
+        int skip = (solve(i + 1, gcd_1, gcd_2, nums)) % M;
+
+        // take in subsequence 1
+        int take_1 = (solve(i + 1, gcd(gcd_1, nums[i]), gcd_2, nums)) % M;
+        
+        // take in subsequence 2
+        int take_2 = (solve(i + 1, gcd_1, gcd(gcd_2, nums[i]), nums)) % M;
+
+        return dp[i][gcd_1][gcd_2] = (0LL + skip + take_1 + take_2) % M;
+    }
+
+    int subsequencePairCount(vector<int>& nums) {
+        
+        memset(dp, -1, sizeof(dp));
+
+        return solve(0, 0, 0, nums);
+    }
+};
