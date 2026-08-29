@@ -36,3 +36,50 @@ public:
         return solve(0, 0, 0, nums);
     }
 };
+
+
+// Appraoch 2 : Bottom Up
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+
+    int subsequencePairCount(vector<int>& nums) {
+        int n = nums.size();
+        int maxEl = *max_element(nums.begin(), nums.end());
+        
+        int dp[n + 1][maxEl + 1][maxEl + 1];
+
+        // base case
+        for(int gcd_1 = 0; gcd_1 <= maxEl; gcd_1++) {
+            for(int gcd_2 = 0; gcd_2 <= maxEl; gcd_2++) {
+                bool bothNonEmpty = (gcd_1 != 0 && gcd_2 != 0);
+                bool gcdMatches   = (gcd_1 == gcd_2);
+                 
+                dp[n][gcd_1][gcd_2] = (bothNonEmpty && gcdMatches) ? 1 : 0;
+            }
+        }
+
+        // fill rest of dp
+
+        for(int i = n - 1; i >= 0; i--) {
+            for(int gcd_1 = maxEl; gcd_1 >= 0; gcd_1--) {
+                for(int gcd_2 = maxEl; gcd_2 >= 0; gcd_2--) {
+
+                    // skip the element
+                    int skip = (dp[i + 1][gcd_1][gcd_2]) % M;
+
+                    // take in subsequence 1
+                    int take_1 = (dp[i + 1][gcd(gcd_1, nums[i])][gcd_2]) % M;
+                    
+                    // take in subsequence 2
+                    int take_2 = (dp[i + 1][gcd_1][gcd(gcd_2, nums[i])]) % M;
+
+                    dp[i][gcd_1][gcd_2] = (0LL + skip + take_1 + take_2) % M;
+                }
+            }
+        }
+
+        return dp[0][0][0];
+    }
+};
