@@ -6,3 +6,17 @@ public:
         return gcd(n * n, n * (n + 1));
     }
 };
+
+
+// Appraoch 2
+
+class Solution {
+public:
+    int gcdOfOddEvenSums(int n) {
+        // return gcd(n * n, n * (n + 1));
+        // n * gcd(n, n + 1);
+        // we know gcd(x, x + 1) is always 1
+        // n * 1 is n
+        return n;
+    }
+};
