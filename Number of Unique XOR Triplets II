@@ -1,0 +1,26 @@
+// Appraoch 1
+
+class Solution {
+public:
+    int uniqueXorTriplets(vector<int>& nums) {
+        int n = nums.size();
+
+        // store all Pairs Xors
+        unordered_set<int> st1;
+        for(int i = 0; i < n; i++) {
+            for(int j = i; j < n; j++) {
+                st1.insert(nums[i] ^ nums[j]);
+            }
+        }
+
+        // find Triplet Xors
+        unordered_set<int> st2;
+        for(int pairXor : st1) {
+            for(int& num : nums) {
+                st2.insert(pairXor ^ num);
+            }
+        }
+
+        return st2.size();
+    }
+};
