@@ -1,0 +1,49 @@
+class Solution {
+public:
+    vector<int> validSequence(string word1, string word2) {
+        int n = word1.length();
+        int m = word2.length();
+
+        vector<int> suffixMatchLength(n, 0);
+
+        int suffixMatchedCount = 0;
+        int i = n - 1;
+        int j = m - 1;
+
+        while(i >= 0) {
+            if(j >= 0 && word1[i] == word2[j]) {
+                suffixMatchedCount++;
+                j--;
+            }
+
+            suffixMatchLength[i] = suffixMatchedCount;
+            i--;
+        }
+
+        vector<int> seq;
+        bool canChange = true;
+
+        i = 0;
+        j = 0;
+
+        while(i < n && j < m) {
+            if(word1[i] == word2[j]) {
+                seq.push_back(i);
+                j++;
+            }
+            else if(canChange && i + 1 < n && suffixMatchLength[i + 1] >= m - j - 1) {
+                seq.push_back(i);
+                j++;
+                canChange = false; // changed a character here
+            }
+
+            i++;
+        }
+
+        if(j < m) {
+            return {};
+        }
+
+        return seq;
+    }
+};
