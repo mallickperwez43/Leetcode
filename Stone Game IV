@@ -1,0 +1,25 @@
+// Bottom Up
+
+class Solution {
+public:
+    bool winnerSquareGame(int n) {
+        vector<bool> dp(n + 1, false);
+
+        // base case
+        // if(n == 0) {
+        //     return false;
+        // }
+        dp[0] = false;
+
+        for(int i = 1; i <= n; i++) {
+            for(int k = 1; k * k <= i; k++) {
+                if(dp[i - (k * k)] == false) { // call for Bob -> false bob lost
+                    dp[i] = true; // alice won
+                    break;
+                }
+            } 
+        }
+
+        return dp[n]; // call for Alice, because she starts first
+    }
+};
