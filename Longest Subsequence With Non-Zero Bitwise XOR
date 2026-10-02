@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int longestSubsequence(vector<int>& nums) {
+        int n = nums.size();
+
+        int resultXor = 0;
+        bool allZeros = true;
+
+        for(int& num : nums) {
+            resultXor ^= num;
+
+            if(num != 0) { // we found atleast one nonZero element
+                allZeros = false;
+            }
+        }
+
+        if(allZeros) { // no subseuence
+            return 0;
+        }
+
+        return (resultXor == 0) ? n - 1 : n;
+    }
+};
