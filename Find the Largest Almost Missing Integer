@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int largestInteger(vector<int>& nums, int k) {
+        int n = nums.size();
+        
+        int i = 0;
+        int j = 0;
+
+        // Go to every K sized window and mark the elements of that window
+        unordered_map<int, int> mp;
+        unordered_set<int> st;
+
+        while(j < n) {
+            if(j - i + 1 == k) { // k sized window
+                for(int idx = i; idx <= j; idx++) { // collect elements of this window
+                    st.insert(nums[idx]);
+                }
+
+                for(int el : st) { // mark all the elements
+                    mp[el]++;
+                }
+
+                st.erase(nums[i]); // shifting window
+                i++;
+            }
+            j++;
+        }
+
+        // find the largest number appeared only in one subarray
+        int result = -1;
+        for(auto [num, count] : mp) {
+            if(count == 1 && num > result) {
+                result = num;
+            }
+        }
+
+        return result;
+    }
+};
