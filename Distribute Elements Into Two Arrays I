@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<int> resultArray(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> result(n);
+
+        int j = 0;   //for arr1
+        int k = n-1; //for arr2
+
+        // Storing arr1 in the order in first half and storing arr2 in the reverse order in second half
+        result[j] = nums[0];
+        result[k] = nums[1];
+
+        for(int i = 2; i < n; i++) {
+            if(result[j] > result[k]) {
+                j++;
+                result[j] = nums[i];
+            }
+            else {
+                k--;
+                result[k] = nums[i];
+            }
+        }
+
+        // reverse the second half as the merger
+        reverse(result.begin() + k, result.end());
+
+        return result;
+    }
+};
