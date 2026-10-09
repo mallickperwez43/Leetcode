@@ -1,0 +1,65 @@
+// Aryan Mittal Method
+
+class Solution {
+public:
+    typedef long long ll;
+
+    ll countLessThanEqualToX(vector<int>& coins, ll x) {
+        int m = coins.size();
+        // [3, 6, 9], m = 3 -> 1 << 3 -> (000... 1000) = 8 -> 8 - 1 = 7 (0000....00111)
+        // mask = 7 
+        // all masks in range [1, 7]
+        // take 3 -> 3 pos = 0 -> 000 .. 001 (set 0th bit)
+        // take 6 -> 6 pos = 1 -> 000 .. 010 (set 1st bit)
+        // take 9 -> 9 pos = 2 -> 000 .. 100 (set 2nd bit)
+        // take 3 & 6 -> 3 pos = 3, 6 pos = 1 -> 000 .. 011 (set 1st & 2nd bit)
+        int allOnesMask = (1 << m) - 1;
+
+        ll count = 0; // count of values <= x
+        for(int mask = 1; mask <= allOnesMask; mask++) { // try all subsets
+            ll setBitsLCM = 1;
+            for(int j = 0; j < m; j++) {
+                if(mask & (1 << j)) { // we have included the coins[j] in this subset
+                    setBitsLCM = lcm(setBitsLCM, coins[j]);
+                }
+            }
+
+            // inclusion-exclusion principle
+            // odd -> add, even -> subtract
+            // a, b, c -> a + b + c - (a ∩ b) - (a ∩ c) - (b ∩ c) + (a ∩ b ∩ c)
+            if(__builtin_popcount(mask) & 1) { // odd
+                count += (x / setBitsLCM);
+            }
+            else {
+                count -= (x / setBitsLCM);
+            }
+        }
+
+        return count;
+    }
+
+    ll findKthSmallest(vector<int>& coins, int k) {
+        ll l = 1;
+        ll r = 25 + (2 * 1e9) * 25; // AP -> 25, 50, 75 ... Tn = a + (n - 1) * d
+        ll result = 0;
+
+        while(l <= r) {
+            ll midX = l + (r - l) / 2;
+
+            ll cnt = countLessThanEqualToX(coins, midX);
+
+            if(cnt >= k) {
+                result = midX;
+                r = midX - 1;
+            }
+            else {
+                l = midX + 1;
+            }
+        }
+
+        return result;
+    }
+};
+
+// TC : O(n * 2 ^ n * logk)
+// SC : O(2 ^ n)
