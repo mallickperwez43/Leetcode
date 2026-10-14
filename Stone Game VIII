@@ -1,0 +1,36 @@
+// Approach 1 : Recursion + Memoization   -- TLE
+
+class Solution {
+public:
+    int n;
+
+    int solve(int i, vector<int>& prefixSum, vector<int>& dp) {
+        if(i == n - 1) {
+            return prefixSum[n - 1];
+        }
+
+        if(dp[i] != -1) {
+            return dp[i];
+        }
+
+        int take = prefixSum[i] - solve(i + 1, prefixSum, dp);
+
+        int skip = solve(i + 1, prefixSum, dp);
+
+        return dp[i] = max(take, skip);
+    }
+
+    int stoneGameVIII(vector<int>& stones) {
+        n = stones.size();
+
+        vector<int> prefixSum(n, 0);
+        prefixSum[0] = stones[0];
+        for(int i = 1; i < n; i++) {
+            prefixSum[i] = prefixSum[i - 1] + stones[i];
+        }
+
+        vector<int> dp(n + 1, -1);
+
+        return solve(1, prefixSum, dp);
+    }
+};
