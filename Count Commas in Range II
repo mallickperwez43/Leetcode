@@ -1,0 +1,26 @@
+// Approach 1
+
+class Solution {
+public:
+    typedef long long ll;
+    ll countCommas(long long n) {
+        ll result = 0;
+
+        ll lower = 1000;
+        ll commas = 1;
+
+        while(lower <= n) {
+            ll upper = min(n, lower * 1000 - 1); // upper > n -> upper = n;
+
+            ll countNumbers = (upper - lower + 1);
+
+            result += (countNumbers * commas);
+
+            lower = upper + 1; // lower *= 1000;
+
+            commas += 1; 
+        } 
+
+        return result;
+    }
+};
