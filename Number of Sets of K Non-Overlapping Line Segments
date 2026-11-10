@@ -1,0 +1,31 @@
+// Recursion + Memoization  ---- TLE
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+
+    int solve(int n, int k, int i, vector<vector<int>>& dp) {
+        if(k == 0) 
+            return 1;
+        
+        if(i >= n)
+            return 0;
+        
+        if(dp[k][i] != -1) 
+            return dp[k][i];
+
+        long long take = 0; // start point = i;
+        for(int j = i + 1; j < n; j++) { // end point = j;
+            take = (take + solve(n, k - 1, j, dp)) % M;
+        }
+
+        long long skip = solve(n, k, i + 1, dp) % M;
+
+        return dp[k][i] = (take + skip) % M;
+    }
+
+    int numberOfSets(int n, int k) {
+        vector<vector<int>> dp(k + 1, vector<int>(n + 1, -1));
+        return solve(n, k, 0, dp) % M;    
+    }
+};
