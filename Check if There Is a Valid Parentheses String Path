@@ -47,3 +47,58 @@ public:
         return solve(0, 0, 0, grid); 
     }
 };
+
+
+// Bottom Up
+
+class Solution {
+public:
+    int m, n;
+
+    int dp[101][101][201];
+
+    bool hasValidPath(vector<vector<char>>& grid) {
+        m = grid.size();    
+        n = grid[0].size();
+
+        if((m + n - 1) & 1) 
+            return false;  
+
+        if(grid[0][0] == ')' || grid[m - 1][n - 1] == '(') 
+            return false;
+        
+        memset(dp, 0, sizeof(dp));
+
+        for(int i = m - 1; i >= 0; i--) {
+            for(int j = n - 1; j >= 0; j--) {
+
+                for(int openCount = 0; openCount <= i + j + 1; openCount++) {
+                    if(i == m - 1 && j == n - 1) {
+                        dp[i][j][openCount] = (openCount == 0);
+                        continue;
+                    }
+
+                    dp[i][j][openCount] = false;
+
+                    // down
+                    if(i + 1 < m) {
+                        int newOpenCount = openCount + ((grid[i + 1][j] == '(') ? 1 : -1); 
+                        if(newOpenCount >= 0 && dp[i + 1][j][newOpenCount]) {
+                            dp[i][j][openCount] = true;
+                        }
+                    }
+
+                    // right
+                    if(j + 1 < n) {
+                        int newOpenCount = openCount + ((grid[i][j + 1] == '(') ? 1 : -1); 
+                        if(newOpenCount >= 0 && dp[i][j + 1][newOpenCount]) {
+                            dp[i][j][openCount] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return dp[0][0][1]; 
+    }
+};
