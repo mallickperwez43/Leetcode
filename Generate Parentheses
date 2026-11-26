@@ -55,3 +55,43 @@ public:
 // SC : O(2n);
 
 
+// Approach - 2
+
+class Solution {
+public:
+    vector<string> result;
+      
+    void solve(string& cur, int n, int open, int close) {
+        // base case
+        if(cur.length() == 2 * n) {
+            result.push_back(cur);
+            return;
+        }
+        
+        if(open < n) {
+            cur.push_back('(');             // Do
+            solve(cur, n, open + 1, close); // Explore
+            cur.pop_back();                 // Undo
+        }
+        
+        if(close < open) {
+            cur.push_back(')');             // Do
+            solve(cur, n, open, close + 1); // Explore
+            cur.pop_back();                 // Undo
+        }
+    }
+
+    vector<string> generateParenthesis(int n) {
+        string cur = "";
+        
+        int open  = 0;
+        int close = 0;
+
+        solve(cur, n, open, close);
+
+        return result;  
+    }
+};
+
+// TC : O(2 ^ 2n * 2n);
+// SC : O(2n);
